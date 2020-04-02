@@ -33,10 +33,11 @@ the files (e.g., one file just has more code than the other), then this is reall
 in which the same lines are different, then git will highlight this and we must fix it manually. Don't forget to push
 the master branch at the end so that the changes go to Github and I can access them.
 
-FETCH:
-If you start working on a new day and want to first grab any changes that I made, click 'Remote' in the tool bar
-and then 'Fetch from' -> 'Origin'. Your (local) master branch will be updated and then you can create a new individual
-branch (replacing the previous individual one) and work there, starting from the most updated point possible.
+PULL:
+If you start working on a new day and want to first grab any changes that I made, click 'Remote' -> 'Fetch from' ->
+'Origin', followed by 'Merge' -> 'Local Merge'. Your (local) master branch will be updated and then you can create a
+new individual branch (replacing the previous individual one) and work there, starting from the most updated point
+possible.
 
 
 
