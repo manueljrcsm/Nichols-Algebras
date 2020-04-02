@@ -236,3 +236,6 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.gitignore.io/api/python,pycharm,windows,jupyternotebooks
+
+# Default ignored files
+/workspace.xml
