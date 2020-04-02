@@ -2,29 +2,41 @@
 
 import numpy as np
 
-from free_algebra import Free_Algebra
+from free_algebra import FreeAlgebra
+from pbw_element import PBWElement
 
 try:
     from sage.combinat.q_analogues import q_factorial, q_int
 except:
     print('Sage module not found')
-from element import element
+from element import Element
 
 pbw_generators = ('x', 'y')
 
 
-class PBW_algebra:
+class PBWAlgebra:
     """Where the PBW algebra lives. The computation of the relations is to be done in this class.
     """
-    def __init__(self, pbw_generators, free_algebra: Free_Algebra) -> None:
+
+    def __init__(self, pbw_generators: str, free_algebra: FreeAlgebra) -> None:
         self.free_algebra = free_algebra
         self.pbw_generators = pbw_generators
-        self.relations = {} # No relations to begin with, updated with compute_relations below.
+        self.relations = {}  # No relations to begin with, updated with compute_relations below.
+        self.compute_relations()
+
+    def set_pbw_element(self, string: str, scalar) -> PBWElement:
+        """The most pratical way to construct a new element. Constructs individual monomials (with an optional scalar).
+        Inputs: string, scalar (one by default).
+        Output: pbw_element of the form 'scalar times string' written in the PBW basis.
+        """
+        if string == 0:
+            newelement = PBWElement({'': 0})
+        else:
+            newelement = PBWElement({string: scalar})
+        return newelement.rewrite()
 
     def compute_relations(self):
-        """Append all the relations to the dictionary 'relations'"""
-
-
+        """Append all the relations to the dictionary 'relations'"""  # TODO
 
 
 def degree(word):
@@ -36,24 +48,3 @@ def degree(word):
                 deg[index] += 1
                 break
     return deg  # in Z^2
-
-
-# Consider importing sage.combinat.q_analogues.q_int outside of Anaconda (running via a SAGE Jupyter Notebook),
-# similar for q_factorial.
-def q_int(n: int, q):
-    # only works with 
-    result = 0
-    for i in range(n):
-        result += q**i
-    return result
-
-
-def q_factorial(n: int, q):
-    result = 1
-    for i in range(n):
-        result *= q_int(i + 1, q)
-    return result
-
-
-def q_bilinear(first: element, second: element):
-    return
