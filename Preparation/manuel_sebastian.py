@@ -13,20 +13,7 @@ import sys
 
 #CODE
 try: #to make it work on both sage and regular python
-	try:
-		from sage.all_cmdline import *   # imports sage library
-		_sage_const_2 = Integer(2); _sage_const_1 = Integer(1)
-        names = ('p','q', 'r') # tuple of strings with the q matrix
-        P = FractionField(PolynomialRing(QQ,3,'p,q,r'))
-		#K = NumberField(u**_sage_const_2  + u + _sage_const_1 , names=('q',)); (q,) = K._first_ngens(1) #K is the field containing a primitive third root of unity 'r'
-		
-		## OPTIONAL: This code is to create variables in the field, that can be used as placeholders in generic linear combinations. Computation can be made to then derive relations or conditions and find out
-		## precisely what the linear combination coefficients must be.
-		#A = PolynomialRing(K, 3,names=('alpha','beta','gamma',)) #to find linear combination of elements
-		#(alpha, beta, gamma,) = A._first_ngens(3)
-	except ModuleNotFoundError: #IGNORE
-		# q=2
-		print("Sage Module not found, q=%s" % q)
+
 except NameError: #IGNORE
    #q=2
    print("Sage not found, Name Error, q=%s" % q)
@@ -144,7 +131,7 @@ class nichols:
 		"""Defines when two nichols elements are equal, i.e., when written in the basis, the monomial terms are all the same with the same coefficients.
 		"""
 		newself = self.red()
-		newother = other.red()
+		newother = other.rewrite()
 		for term1, sca1 in newself.pairs:
 			if term1 not in newother.terms:
 				return False
