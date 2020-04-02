@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-class element:
+class Element:
     """Elements in the free algebra live here.
     """
 
@@ -33,7 +33,7 @@ class element:
             if len(scalar) > 3 or scalar[0:1] == "-":
                 # Terms with a minus sign or complicated elements from K are put under  parentheses, for clarity.
                 scalar = "(" + scalar + ")"
-            word += scalar + present(term)  #  present does some eye-candy on the monomial string representation.
+            word += scalar + present(term)  # present does some eye-candy on the monomial string representation.
             i += 1
         if word == "":  # Empty dictionaries correspond to the 0 element.
             return "0"
@@ -102,7 +102,7 @@ class element:
     def rewrite(self):
         """Simply remove elements with scalar zero.
         """
-        newpoly = element(self.poly.copy())  # Create a copy to begin with.
+        newpoly = Element(self.poly.copy())  # Create a copy to begin with.
         for term, sca in newpoly.pairs:
             # Run through the monomial terms recursively, applying the relations whenever possible. Bergman's Diamond
             # lemma guarantees this works.
@@ -116,7 +116,8 @@ class element:
             """The coproduct of elements written in terms of the algebra generators.
 
             To be used in the bilinear form (|), for the computation of c(PBW_generator) and consecutively, c(u).
-            """
+            """  # TODO
+
 
 def create_element(string, scalar=1):
     """The most pratical way to construct a new element. Constructs individual monomials (with an optional scalar).
@@ -124,10 +125,11 @@ def create_element(string, scalar=1):
     Output: element of the form 'scalar times string' written in the PBW basis.
     """
     if string == 0:
-        newelement = element({'': 0})
+        newelement = Element({'': 0})
     else:
-        newelement = element({string: scalar})
+        newelement = Element({string: scalar})
     return newelement.rewrite()
+
 
 def present(string):
     """Auxiliary function for processing the string of a monomial.
@@ -164,3 +166,24 @@ def present(string):
         else:
             word += string[i - 1] + "^" + str(k)
     return word
+
+
+def c_bilinear(first: Element, second: Element):
+    """Computes (first|second), by the recursive definition."""
+    # TODO
+
+    return
+
+
+def q_bilinear(first: Element, second: Element):
+    """Computes the q-bilinear form between two PBW generators."""
+    # TODO
+
+    return
+
+
+def bracket(first: Element, second: Element) -> Element:
+    """ Computes the q-commutator bracket [first, second]_q."""
+    # TODO verify
+
+    return first*second - create_element('', q_bilinear(first, second))*second*first
