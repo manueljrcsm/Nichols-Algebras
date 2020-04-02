@@ -117,7 +117,7 @@ class element:
 
             To be used in the bilinear form (|), for the computation of c(PBW_generator) and consecutively, c(u).
             """
-            
+
 def create_element(string, scalar=1):
     """The most pratical way to construct a new element. Constructs individual monomials (with an optional scalar).
     Inputs: string, scalar (one by default).
