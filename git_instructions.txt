@@ -1,0 +1,43 @@
+SETUP:
+1. Create a GitHub login.
+2. Open GIT CMD.
+3. Run git config --global user.email "your@email.address" (same one from GitHub login).
+4. Open GIT Gui.
+5. Select Clone Existing Repository.
+6. For 'Source Location', type 'https://github.com/manueljrcsm/Nichols-Algebras'
+7. For 'Target Directory', type a path to the folder where the files should go.
+8. All the data will be downloaded to said folder.
+
+Now you can work on the files and the changes will automatically recognized by Git. They will show up in the GUI,
+when you click in 'Rescan'.
+
+WORKFLOW:
+- First, rescan the files to identify all the changes.
+- Second, stage the changes to collect them into a bundle.
+- Third, commit the changes with a message. This is what creates a new version (locally), the message should document
+what changes where made.
+- Fourth, push will send the commit online into GitHub and it will then be visible for me.
+
+BRANCHES:
+There is a master branch which should be the main one, but I think each of us should have its own branch.
+This means that we can each work on our version (we in fact get each our own folder where file changes are not seen by
+or affect the other). To create a branch, simply go to 'Branch' on the toolbar and select 'Create...', choose a name
+and then again 'Create'. The act of changing from one branch to another is called Checkout.
+
+MERGE:
+Let's say we finished working on our branches and tested the code, so it is ready to go to the master branch.
+The master branch is actually a few commits (versions) behind our individual branches because we are not usually
+working there. Merging the individual branch into master will update all the files and make master have the latest
+commit. To do this, first checkout to master and then click "Merge" in the toolbar. If there are no conflicts between
+the files (e.g., one file just has more code than the other), then this is really smooth. If there are parts of files
+in which the same lines are different, then git will highlight this and we must fix it manually. Don't forget to push
+the master branch at the end so that the changes go to Github and I can access them.
+
+FETCH:
+If you start working on a new day and want to first grab any changes that I made, click 'Remote' in the tool bar
+and then 'Fetch from' -> 'Origin'. Your (local) master branch will be updated and then you can create a new individual
+branch (replacing the previous individual one) and work there, starting from the most updated point possible.
+
+
+
+
