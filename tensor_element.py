@@ -4,10 +4,10 @@ Created on Wed Apr  1 20:00:44 2020
 
 @author: manue
 """
-from element import element
+from element import Element
 
 
-class tensor_element:
+class TensorElement:
     """Its objects are a formal sum of pure tensors in A^{\otimes 2}  with scalar coefficients,
     pure tensors are a pair (tuple) of objects of the class element (NOT simply strings).
     """
@@ -22,15 +22,15 @@ class tensor_element:
                     for term2, sca2 in newsecond.pairs:  # Idem.
                         newsca = sca1*sca2*sca  # Each tensorand may have its own scalar, so when you expand
                         # everything, you want to combine these scalars.
-                        newpair = element({term1: 1}), element(
+                        newpair = Element({term1: 1}), Element(
                             {term2: 1})  # The new tuple is generated  without scalars, which go into the global scalar.
                         newdic[newpair] = newsca
 
-    # Attributes
-    self.dic = newdic
-    self.tensors = newdic.keys()
-    self.scalars = newdic.values()
-    self.items = newdic.items()
+        # Attributes
+        self.dic = newdic
+        self.tensors = newdic.keys()
+        self.scalars = newdic.values()
+        self.items = newdic.items()
 
 
 def __str__(self):
@@ -72,18 +72,18 @@ def __add__(self, other):
             newdic[pair] += sca
         else:
             newdic[pair] = sca
-    newtensor = tensor_element(newdic)
+    newtensor = TensorElement(newdic)
     return newtensor.rewrite()
 
 
 def __mul__(self, other):
-    zero = element({"": 0})
+    zero = Element({"": 0})
     newtensor = tensorize(zero, zero)  # Check definition of tensorize, simpler constructor.
     for pair1, sca1 in self.items:
         for pair2, sca2 in other.items:
             newpair = (pair1[0]*pair2[0], pair1[1]*pair2[1])  # Braiding would come into play here.
             newsca = sca1*sca2
-            newtensor += tensor_element({newpair: newsca})
+            newtensor += TensorElement({newpair: newsca})
     return newtensor.red()
 
 
@@ -92,7 +92,7 @@ def __delitem__(self, term):
 
 
 def copy(self):
-    return tensor_element(self.dic)
+    return TensorElement(self.dic)
 
 
 def rewrite(self):
@@ -107,4 +107,4 @@ def rewrite(self):
 def tensorize(first, second, sca=1):
     """Takes two algebra elements, returns the corresponding pure tensor. """
     newdic = {(first, second): sca}
-    return tensor_element(newdic)
+    return TensorElement(newdic)
