@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
+
 import tensor_element
 import element
+
 
 
 class Letter:
@@ -15,9 +17,11 @@ class PBWLetter(Letter):
     """Class where the PBW generators live.
     """
 
+
     def __init__(self, handle: str, presentation: element.Element):
         self.handle = handle
         self.coproduct = tensor_element.TensorElement({})  # complete this, potentially using the coproduct function
+
         self.presentation = presentation
 
     def get_c(self):
@@ -25,6 +29,7 @@ class PBWLetter(Letter):
         #TODO
 
         return element.c_bilinear(self.presentation,self.presentation)
+
 
 # Consider importing sage.combinat.q_analogues.q_int outside of Anaconda (running via a SAGE Jupyter Notebook),
 # similar for q_factorial.

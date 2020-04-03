@@ -3,8 +3,14 @@
 import numpy as np
 from config import *
 
-
 import pbw_element
+
+try:
+    from sage.combinat.q_analogues import q_factorial, q_int
+except:
+    print('Sage module not found')
+from element import Element
+
 
 pbw_generators = ('x', 'y')
 from free_algebra import FreeAlgebra
@@ -35,7 +41,6 @@ class PBWAlgebra(FreeAlgebra):
 
     def compute_relations(self):
         """Append all the relations to the dictionary 'relations'"""  # TODO
-        print(self.variables)
         self.relations['zt'] = pbw_element.PBWElement({'tz': q, 'u': 1})
         self.relations['zu'] = pbw_element.PBWElement({'uz': p*q, 'x': 1})
         self.relations['zx'] = pbw_element.PBWElement({'xz': p*p*q, 'y': 1})

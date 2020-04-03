@@ -2,7 +2,6 @@
 from element import Element
 import pbw_algebra
 
-
 class PBWElement(Element):
     """Class whose objects are elements in the Nichols algebra B.
 
@@ -17,6 +16,7 @@ class PBWElement(Element):
     Inherits the methods __str__, __add__,__sub__, __mul__, __eq__, __delitem__ and __hash__ from 'element'.
     Overrides the method rewrite().
     """
+
     # TODO needs scalar multiplication,  ordered presentation, lookup terms of certain form (lexicographic order on
     #  the monomials), presentation of exponentials,
 
