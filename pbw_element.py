@@ -1,27 +1,6 @@
 # -*- coding: utf-8 -*-
 from element import Element
-
-try:
-    from sage.all_cmdline import *  # imports sage library
-
-    _sage_const_2 = Integer(2);
-    _sage_const_1 = Integer(1)
-    names = ('p', 'q', 'r')  # tuple of strings with the q matrix
-    P = FractionField(PolynomialRing(QQ, 3, 'p,q,r'))
-# K = NumberField(u**_sage_const_2  + u + _sage_const_1 , names=('q',)); (q,) = K._first_ngens(1) #K is the field containing a primitive third root of unity 'r'
-
-## OPTIONAL: This code is to create variables in the field, that can be used as placeholders in generic linear combinations. Computation can be made to then derive relations or conditions and find out
-## precisely what the linear combination coefficients must be.
-# A = PolynomialRing(K, 3,names=('alpha','beta','gamma',)) #to find linear combination of elements
-# (alpha, beta, gamma,) = A._first_ngens(3)
-except:  # IGNORE
-    q = 2
-    p = 3
-    r = 5
-    print("Sage Module not found, (p,q,r)=(%s,%s,%s)"%(p, q, r))
-
-RELATIONS = {}
-
+import pbw_algebra
 
 class PBWElement(Element):
     """Class whose objects are elements in the Nichols algebra B.
@@ -41,6 +20,10 @@ class PBWElement(Element):
     # TODO needs scalar multiplication,  ordered presentation, lookup terms of certain form (lexicographic order on
     #  the monomials), presentation of exponentials,
 
+    # Class attributes
+    pbw_universe = None
+    relations = {}
+
     def rewrite(self):
         """Reduction of a polynomial to its standard basis form t > u > v > x > y > z. Where it really gets
         interesting and where the commutation relations are applied.
@@ -53,14 +36,8 @@ class PBWElement(Element):
             ut = (1+ r - rq^2)/(qr) tu - (1-q^2)(1 - q^2r)/(q^2r) t^2z
         """
         # Relations are added here, this can be moved elsewhere or passed as an argument
-        RELATIONS['zt'] = PBWElement({'tz': q, 'u': 1})
-        RELATIONS['zu'] = PBWElement({'uz': p*q, 'x': 1})
-        RELATIONS['zx'] = PBWElement({'xz': p*p*q, 'y': 1})
-        RELATIONS['xu'] = PBWElement({'ux': p*p*q*q*q*r, 'v': 1})
-        RELATIONS['zy'] = PBWElement({'yz': p*p*p*q})
-        RELATIONS['ut'] = PBWElement({'tu': (1 + r - r*q*q)/(q*r), 'ttz': (1 - q*q)*(1 - q*q*r)/(q*q*r)})
-
         newpoly = PBWElement(self.poly.copy())  # create a copy to begin
+        relations = PBWElement.relations
         for term, sca in newpoly.pairs:
             # Run through the monomial terms recursively, applying the relations whenever possible. Bergman's Diamond
             # lemma guarantees this works.
@@ -69,10 +46,10 @@ class PBWElement(Element):
                 del newpoly[term]
                 return newpoly.rewrite()
             for i in range(len(term) - 1):
-                if term[i] + term[i + 1] in RELATIONS.keys():
+                if term[i] + term[i + 1] in relations.keys():
                     # TODO: This presupposes that the relations are skew-commutations
                     del newpoly[term]
-                    newpoly += PBWElement({term[:i]: sca})*RELATIONS[term[i] + term[i + 1]]*PBWElement(
+                    newpoly += PBWElement({term[:i]: sca})*relations[term[i] + term[i + 1]]*PBWElement(
                         {term[i + 2:]: 1})
                     return newpoly.rewrite()
         return newpoly
@@ -88,6 +65,14 @@ class PBWElement(Element):
 
         return
 
+    @classmethod
+    def set_universe(cls, a) -> None:
+        PBWElement.universe = a
+        PBWElement.generators = a.generators
+        PBWElement.base_field = a.base_field
+        PBWElement.variables = a.variables
+        PBWElement.q_matrix = a.q_matrix
+        PBWElement.relations = a.relations
 
 def create_pbw_element(string, scalar=1):
     """The most pratical way to construct a new element. Constructs individual monomials (with an optional scalar).

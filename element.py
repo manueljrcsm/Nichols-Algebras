@@ -1,8 +1,17 @@
 # -*- coding: utf-8 -*-
 
+import free_algebra
+
 class Element:
     """Elements in the free algebra live here.
     """
+
+    # Class attributes.
+    universe = None
+    base_field = None
+    q_matrix = None
+    generators = None
+    variables = ()
 
     def __init__(self, dic):
         """
@@ -112,11 +121,19 @@ class Element:
                 return newpoly.rewrite()
         return newpoly
 
-        def coproduct(self) -> tensor_element:
-            """The coproduct of elements written in terms of the algebra generators.
+    def coproduct(self):
+        """The coproduct of elements written in terms of the algebra generators.
 
-            To be used in the bilinear form (|), for the computation of c(PBW_generator) and consecutively, c(u).
-            """  # TODO
+        To be used in the bilinear form (|), for the computation of c(PBW_generator) and consecutively, c(u).
+        """  # TODO
+
+    @classmethod
+    def set_universe(cls, a) -> None:
+        Element.universe = a
+        Element.generators = a.generators
+        Element.base_field = a.base_field
+        Element.variables = a.variables
+        Element.q_matrix = a.q_matrix
 
 
 def create_element(string, scalar=1):
