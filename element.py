@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-import free_algebra
+#import free_algebra
+import tensor_element
 
 class Element:
     """Elements in the free algebra live here.
@@ -33,7 +34,7 @@ class Element:
         for term, sca in self.pairs:
             # Run through the monomial terms of the element.z
             scalar = str(sca)
-            if scalar == "1" and term != "":
+            if scalar == "1" and str(term) != "":
                 # If the coefficient of a term is 1, then it is ommited.
                 scalar = ""
             if i > 0:
@@ -122,6 +123,15 @@ class Element:
         return newpoly
 
     def coproduct(self):
+        print("The coproduct function on the element ", self, " was called.")
+        output = tensor_element.TensorElement({})
+        for term, sca in self.pairs:
+            print("Within the element function I'm currently working on ", term, " + ", sca)
+            temp_term = term.coproduct().scalar_mulitply(sca) #TODO only for debugging purposes 
+            print("On the level of elements we get ", temp_term)
+            output += (temp_term)
+        
+        return output
         """The coproduct of elements written in terms of the algebra generators.
 
         To be used in the bilinear form (|), for the computation of c(PBW_generator) and consecutively, c(u).
@@ -148,7 +158,7 @@ def create_element(string, scalar=1):
     return newelement.rewrite()
 
 
-def present(string):
+def present(input):
     """Auxiliary function for processing the string of a monomial.
 
      Takes a string with concatenation of repeated letters and returns the string with exponents and
@@ -158,6 +168,7 @@ def present(string):
     Output: string
     Example: present('aaa') outputs 'a^3'
     """
+    string = str(input)
     if len(string) <= 1:
         return string
     word = ''
