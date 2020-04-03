@@ -1,16 +1,20 @@
 # -*- coding: utf-8 -*-
 
 
-import free_algebra
-import pbw_algebra
-import pbw_element
-from config import *
+#import free_algebra
+#import pbw_algebra
+#import pbw_element
+import letters
+import word
+import element
+import tensor_element
+#from config import *
 
-a = free_algebra.FreeAlgebra("a b", P,(p,q,r), [[p, q], [q, r]])
-b = pbw_algebra.PBWAlgebra("x y z t u v",a)
-x = pbw_element.create_pbw_element('ut')
+#a = free_algebra.FreeAlgebra("a b", P,(p,q,r), [[p, q], [q, r]])
+#b = pbw_algebra.PBWAlgebra("x y z t u v",a)
+#x = pbw_element.create_pbw_element('ut')
 
-print(x)
+#print(x)
 
 # Example of potential future uses taken from the Zoom chat
 """
@@ -26,3 +30,17 @@ b= A.get_generator("b")
 u_1 = Element.bracket(a,b)
 c = a+b
 """
+
+a= letters.Letter("a")
+b= letters.Letter("b")
+c= letters.Letter("c")
+
+w= word.Word([a,b,c])
+u= word.Word([b,b,b])
+
+
+e = element.Element({u:2, w:-1})
+
+y= e.coproduct()
+
+print("The end result is:", y)
