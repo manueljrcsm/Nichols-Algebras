@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-#import free_algebra
 import tensor_element
 
 class Element:
@@ -12,7 +11,6 @@ class Element:
     base_field = None
     q_matrix = None
     generators = None
-    variables = ()
 
     def __init__(self, dic):
         """
@@ -142,7 +140,6 @@ class Element:
         Element.universe = a
         Element.generators = a.generators
         Element.base_field = a.base_field
-        Element.variables = a.variables
         Element.q_matrix = a.q_matrix
 
 

@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-
-import element
 import tensor_element
 import word
 
@@ -53,7 +51,7 @@ class PBWLetter(Letter, object):
     """
     __slots__ =("handle","presentation", "coproduct")
 
-    def __init__(self, handle: str, presentation: element.Element):
+    def __init__(self, handle: str, presentation):
         object.__setattr__(self,"handle", handle)
         object.__setattr__(self, "presentation", presentation)
         #TODO
@@ -79,8 +77,8 @@ class PBWLetter(Letter, object):
     def get_c(self):
         """Return the c of the PBW letter, i.e., (self|self)."""
         #TODO
-
-        return element.c_bilinear(self.presentation,self.presentation)
+        from element import c_bilinear
+        return c_bilinear(self.presentation,self.presentation)
 
 
 # Consider importing sage.combinat.q_analogues.q_int outside of Anaconda (running via a SAGE Jupyter Notebook),

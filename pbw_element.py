@@ -70,7 +70,6 @@ class PBWElement(Element):
         PBWElement.universe = a
         PBWElement.generators = a.generators
         PBWElement.base_field = a.base_field
-        PBWElement.variables = a.variables
         PBWElement.q_matrix = a.q_matrix
         PBWElement.relations = a.relations
 

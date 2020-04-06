@@ -69,6 +69,9 @@ class Word:
 
     def __hash__(self):
         return hash(str(self))
+
+    def __len__(self):
+        return len(self.letters_list)
     
     def coproduct(self):
         output = tensor_element.TensorElement({(Word([]), Word([])): 1})
