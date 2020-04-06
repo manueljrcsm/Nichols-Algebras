@@ -21,9 +21,7 @@ class Word:
     
     def __init__(self, letters_list):
         try:
-            if ((all(type(l) is letters.Letter for l in letters_list))
-                or (all(type(l) is letters.PBWLetter for l in letters_list))):
-                
+            if all(type(l) in (letters.Letter,letters.PBWLetter) for l in letters_list):
                 degree_dict = {}
                 for l in letters_list:
                     if l in degree_dict:
@@ -37,15 +35,14 @@ class Word:
                 object.__setattr__(self, "length", len(letters_list))
                 object.__setattr__(self, "degree", degree_dict)
                         
-                
             else:
                 msg = ("The given list of letters contained incompatible types."
-                + " Please make sure to only use letters or PBWLetters.")
+                + " Please make sure to only use Letters or PBWLetters.")
                 raise AssertionError(msg)
              
         except TypeError:
-            raise AssertionError("The given letters were not presented in the expect format.")
-     
+            raise AssertionError("The given letters were not presented in the expected format.")
+
     def __str__(self):
         
         if self.length == 0:
@@ -67,13 +64,9 @@ class Word:
             return False
         if(self.length != other.length):
             return False
-        else: 
-            for i in range(self.length):
-                if not self.letters[i] == other.letters[i]:
-                    return False
-                
-            return True
-        
+        else:
+            return all(self.letters[i] == other.letters[i] for i in range(self.length))
+
     def __hash__(self):
         return hash(str(self))
     
