@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 import element
 import tensor_element
 import word
@@ -29,7 +28,6 @@ class Letter:
         return self.handle
     
     def __setattr__(self, name: str, value):
-        
         msg = "It is not allowed to change the value of the attribute '"+name+"'."
         raise AttributeError(msg)
         
@@ -44,7 +42,6 @@ class Letter:
         return self.handle == other.handle
     
     def __hash__(self):
-        
         return hash(self.handle)
     
     def has_same_handle(self, other):
@@ -73,6 +70,7 @@ class Letter:
     def is_unit(self):
         
         return self.handle in ("", "1")
+
 
 class PBWLetter(Letter, object):
     """Class where the PBW generators live.
@@ -105,12 +103,11 @@ class PBWLetter(Letter, object):
          return self.handle == other.handle
      
     def __hash__(self):
-        
+
         return hash(self.handle)
 
     def get_c(self):
         """Return the c of the PBW letter, i.e., (self|self)."""
-        
         return self.c_bilinear(self)
     
     def c_bilinear(self, other):
@@ -155,15 +152,3 @@ def q_bilinear(first: PBWLetter, second: PBWLetter):
     #TODO
 
     return
-
-
-
-        
-
-# --- small example to highlight immutablility ---#
-    
-#a = Letter("test")
-#b = PBWLetter("test", None)
-#print(a.has_same_handle(b))
-#print(b.has_same_handle(a))
-#print(a==b)

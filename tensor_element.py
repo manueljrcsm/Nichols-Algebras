@@ -4,9 +4,9 @@ Created on Wed Apr  1 20:00:44 2020
 
 @author: manue
 """
+
 #from element import Element
 from word import TensorWord
-
 
 class TensorElement:
     """Its objects are a formal sum of pure tensors in A^{\otimes 2}  with scalar coefficients,
@@ -16,10 +16,10 @@ class TensorElement:
     __slots__ = ("dic", "tensor_terms", "scalars", "pairs")
 
     def __init__(self, dic: dict):
-        
-        
+
         if( all(type(e) is TensorWord for e in list(dic.keys()))):
             new_dic ={}
+            
             for tensorand, scalar in dic.items():
                 if not scalar == 0:
                     new_dic[tensorand] = scalar
@@ -55,7 +55,6 @@ class TensorElement:
     
     
     def __add__(self, other):
-        
         output_dict = other.dic.copy()
         for tensor_term, sca in self.pairs:
             if tensor_term in other.dic:
@@ -135,7 +134,6 @@ class TensorElement:
     def copy(self):
         return TensorElement(self.dic)
     
-    
     def rewrite(self):
         """Cleaning zero terms."""
         newtensor = self.copy()
@@ -143,8 +141,7 @@ class TensorElement:
             if sca == 0:
                 del newtensor[pair]
         return newtensor
-    
-    
+
     def tensorize(first, second, sca=1):
         """Takes two algebra elements, returns the corresponding pure tensor. """
         newdic = {(first, second): sca}

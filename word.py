@@ -78,13 +78,14 @@ class Word:
         return Word(gen_list)
     
     def __eq__(self, other):
-        
+
         if type(other) != Word: 
             msg =("Warning you are comparing a word to a ", type(other))
             raise AssertionError(msg)
             return False
         if(self.length != other.length):
             return False
+
         else: 
             for i in range(self.length):
                 if not self.letters[i] == other.letters[i]:
@@ -245,8 +246,4 @@ class TensorWord:
                 extended_term.extend(list(self.words)[1:]) 
                 
                 output_dict[TensorWord(extended_term)]=sca
-            return tensor_element.TensorElement(output_dict)
-    
-     
-            
-                                    
+            return tensor_element.TensorElement(output_dict)                                              
