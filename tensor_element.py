@@ -5,8 +5,8 @@ Created on Wed Apr  1 20:00:44 2020
 @author: manue
 """
 #from element import Element
-from word import Word
-import copy
+from word import TensorWord
+
 
 class TensorElement:
     """Its objects are a formal sum of pure tensors in A^{\otimes 2}  with scalar coefficients,
@@ -18,50 +18,28 @@ class TensorElement:
     def __init__(self, dic: dict):
         
         
-        if( all(type(e) is tuple for e in list(dic.keys()))
-           and  all(all(type(f) is Word for f in e) for e in list(dic.keys()))):
-            
+        if( all(type(e) is TensorWord for e in list(dic.keys()))):
             new_dic ={}
             for tensorand, scalar in dic.items():
                 if not scalar == 0:
                     new_dic[tensorand] = scalar
-            object.__setattr__(self, "dic",new_dic)
+            object.__setattr__(self, "dic", new_dic)
             object.__setattr__(self, "tensor_terms", new_dic.keys())
             object.__setattr__(self, "scalars", new_dic.values())
-            object.__setattr__(self, "pairs", new_dic.items())
-            
-            
+            object.__setattr__(self, "pairs", new_dic.items())             
+       
         else:
             msg = "The tensor element was not in the expected format"
             raise AssertionError(msg)
-        """
-        newdic = {}
-        if dic != {}:
-            for pair, sca in dic.items():  # Pair is a tuple, sca is a number.
-                newfirst = pair[0].rewrite()  # In case the input is not in standard form.
-                newsecond = pair[1].rewrite()  # Idem.
-                for term1, sca1 in newfirst.pairs:  # Here term1 is string, sca1 is number.
-                    for term2, sca2 in newsecond.pairs:  # Idem.
-                        newsca = sca1*sca2*sca  # Each tensorand may have its own scalar, so when you expand
-                        # everything, you want to combine these scalars.
-                        newpair = Element({term1: 1}), Element(
-                            {term2: 1})  # The new tuple is generated  without scalars, which go into the global scalar.
-                        newdic[newpair] = newsca
-
-        # Attributes
-        self.dic = newdic
-        self.tensors = newdic.keys()
-        self.scalars = newdic.values()
-        self.items = newdic.items()
-        """
 
     
     def __str__(self):
+        
         word = ""
         for tensor_term, sca in self.pairs:
             scalar = str(abs(sca)) if (sca != 1) else  ""
             word = word + " + " if (sca > 0 ) else word + " - "
-            word += scalar+ (u'\u2297').join(str(w) for w in tensor_term)
+            word += scalar+ str(tensor_term)
         if len(word) == 0:
             return  ""
         elif word[0:3] ==" + ":
@@ -78,7 +56,6 @@ class TensorElement:
     
     def __add__(self, other):
         
-        print ("I'm requested to add ", self, " and ", other )
         output_dict = other.dic.copy()
         for tensor_term, sca in self.pairs:
             if tensor_term in other.dic:
@@ -87,8 +64,7 @@ class TensorElement:
                 else:
                     output_dict[tensor_term] += sca
             else:
-                output_dict[tensor_term] = sca
-                  
+                output_dict[tensor_term] = sca        
         return TensorElement(output_dict)
                   
       
@@ -96,8 +72,22 @@ class TensorElement:
         return self + other.scalar_mulitply(-1)             
     
     
-    def __mul__(self, other):
-       output_dict ={}
+    def __mul__(self, other):       
+       if all(w.tensor_degree is list(self.tensor_terms)[0].tensor_degree for w in list(self.tensor_terms)):
+           output_dict ={}
+           for tensor_term_1, sca_1 in self.pairs:
+               for tensor_term_2, sca_2 in other.pairs:
+                   new_term = tensor_term_1 + tensor_term_2
+                   new_sca = sca_1*sca_2
+                   
+                   output_dict[new_term] = (output_dict[new_term]+ new_sca if (new_term in output_dict) 
+                                            else new_sca)
+           return TensorElement(output_dict)
+       else:
+           msg = "You tried to muliply tensorands of different length. This is not supported."
+           raise AssertionError(msg)  
+           
+       """
        if not  all(len(e)==len(list(self.tensor_terms)[0]) for e,f in self.pairs):
            msg = "You tried to muliply tensorands of different length. This is not supported."
            raise AssertionError(msg)           
@@ -116,18 +106,18 @@ class TensorElement:
                     else:
                         output_dict[tuple(word_list)] += sca_1 *sca_2 
        return TensorElement(output_dict)
-                
-                      
+       """         
+    def coproduct(self):
+        return sum([term.coproduct().scalar_mulitply(sca) for term, sca in self.pairs], 
+                   TensorElement({}))                  
                           
                   
                        
         
     def scalar_mulitply(self, number):
         
-        print("The term", self, "should be scalary muliplied by ", number)
-        
         if(number == 0):
-           return  TensorElement({})
+           return  TensorElement({TensorWord([]):1})
         #TODO CHECK THAT NUMBER IS INT FLOAT SAGE_SCALAR
         if (number == 1):
            return self
@@ -135,7 +125,6 @@ class TensorElement:
         for tensor_term, scalar in self.pairs:
             output_dict[tensor_term] = scalar*number       
         result = TensorElement(output_dict)
-        print(result)
         return result
     
     

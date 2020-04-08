@@ -2,6 +2,7 @@
 
 #import free_algebra
 import tensor_element
+import word
 
 class Element:
     """Elements in the free algebra live here.
@@ -16,7 +17,6 @@ class Element:
 
     def __init__(self, dic):
         """
-
     Constructor. An object structure is stored in a dictionary. Defines some attributes of the element which can
             then be manipulated.
         """
@@ -27,7 +27,8 @@ class Element:
         self.pairs = newdic.items()
 
     def __str__(self):
-        """Creates the string representation of an element, i.e., what you see when you do 'print(element)'.
+        """Creates the string representation of an element, i.e., what you see when you do '
+        (element)'.
         """
         word = ""
         i = 0
@@ -123,19 +124,37 @@ class Element:
         return newpoly
 
     def coproduct(self):
-        print("The coproduct function on the element ", self, " was called.")
-        output = tensor_element.TensorElement({})
-        for term, sca in self.pairs:
-            print("Within the element function I'm currently working on ", term, " + ", sca)
-            temp_term = term.coproduct().scalar_mulitply(sca) #TODO only for debugging purposes 
-            print("On the level of elements we get ", temp_term)
-            output += (temp_term)
+        """ 
+            Returns the coproduct of an element by using the linearity of the coproduct
+            I.e. cop(ab+ 3cd) = cop(ab)+ 3* cop(cd)
+            
+            The function splits each element into its words, 
+            calls the coproduct function on each word,
+            multiplies the result with the associated coefficient
+            and returns the sum of all these tensor elements
+        """
+        return sum([term.coproduct().scalar_mulitply(sca) for term, sca in self.pairs], 
+                   tensor_element.TensorElement({word.TensorWord(
+                       [word.Word([]), word.Word([])]):0}))
         
-        return output
-        """The coproduct of elements written in terms of the algebra generators.
-
-        To be used in the bilinear form (|), for the computation of c(PBW_generator) and consecutively, c(u).
-        """  # TODO
+    def c_bilinear(self, other):
+        """
+            Computes the value of the c bilinear form of an element wrt to another element.
+            It uses the bilineary to  compute say (ab+4xy, cd+ 2z) as
+            (ab,cd)+ 2*(ab,z) +4(xy,cd)+ 8(xy,z)
+            
+            The function splits the element self and other into each word.
+            For every such pair of words it computs the c-bilnear on this pair,
+            multiplies it with the respective coefficients
+            and sums everything up.
+        """                
+        output_number = 0
+        
+        for term_1,sca_1 in self.pairs:
+            for term_2, sca_2 in other.pairs:
+                output_number += sca_1*sca_2* term_1.c_bilinear(term_2)
+    
+        return output_number
 
     @classmethod
     def set_universe(cls, a) -> None:
@@ -194,14 +213,6 @@ def present(input):
         else:
             word += string[i - 1] + "^" + str(k)
     return word
-
-
-def c_bilinear(first: Element, second: Element):
-    """Computes (first|second), by the recursive definition."""
-    # TODO
-
-    return
-
 
 def q_bilinear(first: Element, second: Element):
     """Computes the q-bilinear form between two PBW generators."""

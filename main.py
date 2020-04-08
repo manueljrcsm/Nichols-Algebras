@@ -7,7 +7,7 @@
 import letters
 import word
 import element
-import tensor_element
+#import tensor_element
 #from config import *
 
 #a = free_algebra.FreeAlgebra("a b", P,(p,q,r), [[p, q], [q, r]])
@@ -31,16 +31,28 @@ u_1 = Element.bracket(a,b)
 c = a+b
 """
 
-a= letters.Letter("a")
+a= letters.Letter("a",True)
 b= letters.Letter("b")
 c= letters.Letter("c")
 
-w= word.Word([a,b,c])
-u= word.Word([b,b,b])
+
+r = word.Word([a, b], True)
+s = word.Word([b, a])
+t = word.Word([a,b,c])
+
+x = element.Element({r:4, s:1})
+y = element.Element({s:1, r:-1})
+z = element.Element({t:1})
 
 
-e = element.Element({u:2, w:-1})
+xa= x
+xb = x+z
 
-y= e.coproduct()
+u = letters.PBWLetter("u", xa, True)
+v = letters.PBWLetter("v", xb)
 
-print("The end result is:", y)
+num = u.c_bilinear(v)
+
+print("The result is", num)
+
+
