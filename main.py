@@ -31,14 +31,19 @@ u_1 = Element.bracket(a,b)
 c = a+b
 """
 
-a= letters.Letter("a",True)
-b= letters.Letter("b")
-c= letters.Letter("c")
+a= letters.Letter("a")
+#b= letters.Letter("b")
+#c= letters.Letter("c")
+d = letters.Letter("")
 
 
-r = word.Word([a, b], True)
-s = word.Word([b, a])
-t = word.Word([a,b,c])
+#r = word.Word([a, b], True)
+#s = word.Word([b, a])
+#t = word.Word([a,b,c])
+u = word.Word([d,a,a,d,d], True)
+
+
+"""
 
 x = element.Element({r:4, s:1})
 y = element.Element({s:1, r:-1})
@@ -54,5 +59,5 @@ v = letters.PBWLetter("v", xb)
 num = u.c_bilinear(v)
 
 print("The result is", num)
-
+"""
 
