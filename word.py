@@ -26,31 +26,29 @@ class Word:
             # Thus it has a coproduct (and maybe other desirebal properties)
             try:
                 internal_letters_list = [x for x in letters_list if not x.is_unit()]
-            except TypeError:
-                    raise TypeError("The list of letters was not iterable")
-            
-            internal_letters_list = [letters.Letter("")] if not internal_letters_list else internal_letters_list
-            
-            if ((all(type(l) is letters.Letter for l in internal_letters_list))
-                or (all(type(l) is letters.PBWLetter for l in internal_letters_list))):
+                internal_letters_list = [letters.Letter("")] if not internal_letters_list else internal_letters_list
                 
-                degree_dict = {}
-                for l in internal_letters_list:
-                    if not l.is_unit():
-                        degree_dict[l] = degree_dict[l]+1 if (l in degree_dict) else 1  
-                try:        
-                    object.__setattr__(self, "letters", tuple(internal_letters_list))
-                except TypeError:
-                    raise TypeError("Your given list was not convertible into a tuple.")
+                object.__setattr__(self, "letters", tuple(internal_letters_list))
                 object.__setattr__(self, "length", len(internal_letters_list))
-                object.__setattr__(self, "degree", degree_dict)
-                        
-                if(print_stats):
-                    print(self.stats_string())
-            else:
-                msg = ("The given list of letters contained incompatible types."
-                + " Please make sure to only use letters or PBWLetters.")
-                raise AssertionError(msg)
+                
+                if ((all(type(l) is letters.Letter for l in internal_letters_list))
+                    or (all(type(l) is letters.PBWLetter for l in internal_letters_list))):
+                    
+                    degree_dict = {}
+                    for l in internal_letters_list:
+                        if not l.is_unit():
+                            degree_dict[l] = degree_dict[l]+1 if (l in degree_dict) else 1  
+                            
+                    object.__setattr__(self, "degree", degree_dict)
+                            
+                    if(print_stats):
+                        print(self.stats_string())
+                else:
+                    msg = ("The given list of letters contained incompatible types."
+                    + " Please make sure to only use letters or PBWLetters.")
+                    raise AssertionError(msg)
+            except TypeError:
+                raise TypeError("The list of letters was not iterable")
              
         except TypeError:
             raise AssertionError("The given letters were not presented in the expect format.")

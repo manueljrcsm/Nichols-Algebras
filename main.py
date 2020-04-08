@@ -2,15 +2,15 @@
 
 
 
-from free_algebra import FreeAlgebra
-from pbw_algebra import PBWAlgebra
+#from free_algebra import FreeAlgebra
+#from pbw_algebra import PBWAlgebra
 #import pbw_element
 import letters
 import word
-import element
-import tensor_element
+#import element
+#import tensor_element
 #from config import *
-
+"""
 try:
     from sage.all_cmdline import FractionField,PolynomialRing,QQ  # imports sage library
 
@@ -29,7 +29,7 @@ b = PBWAlgebra("x y z t u v",a)
 x = b.set_pbw_element('ut')
 
 #print(x)
-
+"""
 # Example of potential future uses taken from the Zoom chat
 """
 A = FreeAlgebra("a b")
