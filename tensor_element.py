@@ -4,7 +4,8 @@ Created on Wed Apr  1 20:00:44 2020
 
 @author: manue
 """
-from element import Element
+#from element import Element
+from word import TensorWord
 
 
 class TensorElement:
@@ -12,99 +13,139 @@ class TensorElement:
     pure tensors are a pair (tuple) of objects of the class element (NOT simply strings).
     """
 
-    def __init__(self, dic):
-        newdic = {}
-        if dic != {}:
-            for pair, sca in dic.items():  # Pair is a tuple, sca is a number.
-                newfirst = pair[0].rewrite()  # In case the input is not in standard form.
-                newsecond = pair[1].rewrite()  # Idem.
-                for term1, sca1 in newfirst.pairs:  # Here term1 is string, sca1 is number.
-                    for term2, sca2 in newsecond.pairs:  # Idem.
-                        newsca = sca1*sca2*sca  # Each tensorand may have its own scalar, so when you expand
-                        # everything, you want to combine these scalars.
-                        newpair = Element({term1: 1}), Element(
-                            {term2: 1})  # The new tuple is generated  without scalars, which go into the global scalar.
-                        newdic[newpair] = newsca
+    __slots__ = ("dic", "tensor_terms", "scalars", "pairs")
 
-        # Attributes
-        self.dic = newdic
-        self.tensors = newdic.keys()
-        self.scalars = newdic.values()
-        self.items = newdic.items()
-
-
-def __str__(self):
-    word = ""
-    i = 0
-    for pair, sca in self.items:
-        scalar = str(sca)
-        first = str(pair[0])
-        second = str(pair[1])
-        if scalar == "1":
-            scalar = ""
-        if first == "":
-            first = "1"
-        if second == "":
-            second = "1"
-        if i > 0:
-            if scalar[0:1] == '-':
-                word += " - "
-                if scalar == "-1":
-                    scalar = ""
-                else:
-                    scalar = str(sca)[1:]
-            else:
-                word += " + "
-        if len(scalar) > 3:
-            scalar = "(" + scalar + ")"
-        word += scalar + "(" + first + u"\u2297" + second + ")"  # u"\u2297" is the \otimes symbol.
-        i += 1
-    if word == "":
-        return "0"
-    else:
-        return word
-
-
-def __add__(self, other):
-    newdic = self.dic.copy()
-    for pair, sca in other.items:
-        if pair in newdic:
-            newdic[pair] += sca
+    def __init__(self, dic: dict):
+        
+        
+        if( all(type(e) is TensorWord for e in list(dic.keys()))):
+            new_dic ={}
+            for tensorand, scalar in dic.items():
+                if not scalar == 0:
+                    new_dic[tensorand] = scalar
+            object.__setattr__(self, "dic", new_dic)
+            object.__setattr__(self, "tensor_terms", new_dic.keys())
+            object.__setattr__(self, "scalars", new_dic.values())
+            object.__setattr__(self, "pairs", new_dic.items())             
+       
         else:
-            newdic[pair] = sca
-    newtensor = TensorElement(newdic)
-    return newtensor.rewrite()
+            msg = "The tensor element was not in the expected format"
+            raise AssertionError(msg)
 
-
-def __mul__(self, other):
-    zero = Element({"": 0})
-    newtensor = tensorize(zero, zero)  # Check definition of tensorize, simpler constructor.
-    for pair1, sca1 in self.items:
-        for pair2, sca2 in other.items:
-            newpair = (pair1[0]*pair2[0], pair1[1]*pair2[1])  # Braiding would come into play here.
-            newsca = sca1*sca2
-            newtensor += TensorElement({newpair: newsca})
-    return newtensor.red()
-
-
-def __delitem__(self, term):
-    del self.dic[term]
-
-
-def copy(self):
-    return TensorElement(self.dic)
-
-
-def rewrite(self):
-    """Cleaning zero terms."""
-    newtensor = self.copy()
-    for pair, sca in newtensor.items:
-        if sca == 0:
-            del newtensor[pair]
-    return newtensor
-
-
-def tensorize(first, second, sca=1):
-    """Takes two algebra elements, returns the corresponding pure tensor. """
-    newdic = {(first, second): sca}
-    return TensorElement(newdic)
+    
+    def __str__(self):
+        
+        word = ""
+        for tensor_term, sca in self.pairs:
+            scalar = str(abs(sca)) if (sca != 1) else  ""
+            word = word + " + " if (sca > 0 ) else word + " - "
+            word += scalar+ str(tensor_term)
+        if len(word) == 0:
+            return  ""
+        elif word[0:3] ==" + ":
+            return word[3: ]
+        else: 
+            return word
+            
+    
+    def __setattr__(self, name: str, value):
+            
+            msg = "It is not allowed to change the value of the attribute '"+name+"'."
+            raise AttributeError(msg)
+    
+    
+    def __add__(self, other):
+        
+        output_dict = other.dic.copy()
+        for tensor_term, sca in self.pairs:
+            if tensor_term in other.dic:
+                if sca + output_dict[tensor_term] == 0:
+                    output_dict.pop(tensor_term)
+                else:
+                    output_dict[tensor_term] += sca
+            else:
+                output_dict[tensor_term] = sca        
+        return TensorElement(output_dict)
+                  
+      
+    def __sub__(self,other):
+        return self + other.scalar_mulitply(-1)             
+    
+    
+    def __mul__(self, other):       
+       if all(w.tensor_degree is list(self.tensor_terms)[0].tensor_degree for w in list(self.tensor_terms)):
+           output_dict ={}
+           for tensor_term_1, sca_1 in self.pairs:
+               for tensor_term_2, sca_2 in other.pairs:
+                   new_term = tensor_term_1 + tensor_term_2
+                   new_sca = sca_1*sca_2
+                   
+                   output_dict[new_term] = (output_dict[new_term]+ new_sca if (new_term in output_dict) 
+                                            else new_sca)
+           return TensorElement(output_dict)
+       else:
+           msg = "You tried to muliply tensorands of different length. This is not supported."
+           raise AssertionError(msg)  
+           
+       """
+       if not  all(len(e)==len(list(self.tensor_terms)[0]) for e,f in self.pairs):
+           msg = "You tried to muliply tensorands of different length. This is not supported."
+           raise AssertionError(msg)           
+       for tensor_term_1, sca_1 in self.pairs:
+           for tensor_term_2, sca_2 in other.pairs:
+               if(len (tensor_term_1)!= len(tensor_term_2)):
+                   msg = "You tried to muliply tensorands of different length. This is not supported."
+                   raise AssertionError(msg)
+               else:
+                    word_list =[]
+                    for i in range(len(tensor_term_1)):
+                        word_list.append(tensor_term_1[i]+ tensor_term_2[i])
+                            
+                    if not tuple(word_list) in output_dict:
+                        output_dict[tuple(word_list)] = sca_1 *sca_2
+                    else:
+                        output_dict[tuple(word_list)] += sca_1 *sca_2 
+       return TensorElement(output_dict)
+       """         
+    def coproduct(self):
+        return sum([term.coproduct().scalar_mulitply(sca) for term, sca in self.pairs], 
+                   TensorElement({}))                  
+                          
+                  
+                       
+        
+    def scalar_mulitply(self, number):
+        
+        if(number == 0):
+           return  TensorElement({TensorWord([]):1})
+        #TODO CHECK THAT NUMBER IS INT FLOAT SAGE_SCALAR
+        if (number == 1):
+           return self
+        output_dict = {}
+        for tensor_term, scalar in self.pairs:
+            output_dict[tensor_term] = scalar*number       
+        result = TensorElement(output_dict)
+        return result
+    
+    
+    def __delitem__(self, term):
+        del self.dic[term]
+    
+    
+    def copy(self):
+        return TensorElement(self.dic)
+    
+    
+    def rewrite(self):
+        """Cleaning zero terms."""
+        newtensor = self.copy()
+        for pair, sca in newtensor.pairs:
+            if sca == 0:
+                del newtensor[pair]
+        return newtensor
+    
+    
+    def tensorize(first, second, sca=1):
+        """Takes two algebra elements, returns the corresponding pure tensor. """
+        newdic = {(first, second): sca}
+        return TensorElement(newdic)

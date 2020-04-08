@@ -1,16 +1,20 @@
 # -*- coding: utf-8 -*-
 
 
-import free_algebra
-import pbw_algebra
-import pbw_element
-from config import *
+#import free_algebra
+#import pbw_algebra
+#import pbw_element
+import letters
+import word
+import element
+#import tensor_element
+#from config import *
 
-a = free_algebra.FreeAlgebra("a b", P,(p,q,r), [[p, q], [q, r]])
-b = pbw_algebra.PBWAlgebra("x y z t u v",a)
-x = pbw_element.create_pbw_element('ut')
+#a = free_algebra.FreeAlgebra("a b", P,(p,q,r), [[p, q], [q, r]])
+#b = pbw_algebra.PBWAlgebra("x y z t u v",a)
+#x = pbw_element.create_pbw_element('ut')
 
-print(x)
+#print(x)
 
 # Example of potential future uses taken from the Zoom chat
 """
@@ -26,3 +30,29 @@ b= A.get_generator("b")
 u_1 = Element.bracket(a,b)
 c = a+b
 """
+
+a= letters.Letter("a",True)
+b= letters.Letter("b")
+c= letters.Letter("c")
+
+
+r = word.Word([a, b], True)
+s = word.Word([b, a])
+t = word.Word([a,b,c])
+
+x = element.Element({r:4, s:1})
+y = element.Element({s:1, r:-1})
+z = element.Element({t:1})
+
+
+xa= x
+xb = x+z
+
+u = letters.PBWLetter("u", xa, True)
+v = letters.PBWLetter("v", xb)
+
+num = u.c_bilinear(v)
+
+print("The result is", num)
+
+

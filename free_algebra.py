@@ -24,7 +24,7 @@ class FreeAlgebra:
             newelement = element.Element({string: scalar})
         return newelement.rewrite()
 
-    def set_pbw_generator(self, handle: str, representation) -> letters.PBWLetter:
-        """Creates the PBW generator with a given handle and representation."""
+    #def set_pbw_generator(self, handle: str, representation) -> letters.PBWLetter:
+    #    """Creates the PBW generator with a given handle and representation."""
 
-        return letters.PBWLetter(handle, representation)
+    #    return letters.PBWLetter(handle, representation)
