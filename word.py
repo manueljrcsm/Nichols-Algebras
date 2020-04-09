@@ -14,6 +14,7 @@ Created on Fri Apr  3 08:36:29 2020
 import letters
 import string_helper
 import tensor_element
+from universe import Universe
 
 class Word:
     
@@ -81,9 +82,16 @@ class Word:
             print("Yields the output", output)
         print("The word ", self, " yields as output ", output)
         return output
-                    
-        
-#Examples
 
-            
-                                    
+    def q_bilinear(self,other):
+
+        if self == Word.EMPTY or other == Word.EMPTY:
+            return 1
+
+        result = 1
+        for (row, col) in Universe.q_matrix.keys():
+            power = self.degree.get(row, 0)*other.degree.get(col, 0)
+            result *= Universe.q_matrix[(row, col)]**power
+        return result
+
+Word.EMPTY = Word([])

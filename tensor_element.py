@@ -111,7 +111,7 @@ class TensorElement:
                         output_dict[tuple(word_list)] += sca_1*sca_2
         return TensorElement(output_dict)
 
-    def scalar_mulitply(self, number):
+    def scalar_multiply(self, number):
 
         print("The term", self, "should be scalary muliplied by ", number)
 

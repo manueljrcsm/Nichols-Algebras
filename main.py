@@ -3,31 +3,42 @@
 
 from free_algebra import FreeAlgebra
 from pbw_algebra import PBWAlgebra
-#import pbw_element
-import letters
+import numpy as np
 import word
 import element
-import tensor_element
-#from config import *
 
 try:
     from sage.all_cmdline import FractionField,PolynomialRing,QQ  # imports sage library
 
-    names = ('p', 'q', 'r')  # tuple of strings with the q matrix
-    P = FractionField(PolynomialRing(QQ, 3, 'p,q,r'))
-    (p,q,r) = P._first_ngens(3)
+    names = ('q_11', 'q_12', 'q_21','q_22')  # tuple of strings with the q matrix
+    P = FractionField(PolynomialRing(QQ, 4, names))
+    (q_11,q_12,q_21,q_22) = P._first_ngens(4)
     print(P)
 
-except:  # IGNORE
-    (p,q,r) = (2,3,5)
-    P = None
-    print("Sage Module not found at main, (p,q,r)=(%s,%s,%s)"%(p, q, r))
+except ModuleNotFoundError:  # IGNORE
+     (q_11,q_12,q_21,q_22) = (2,3,5,7)
+     P = None
+     print("Sage Module not found at main,  (q_11,q_12,q_21,q_22)=(%s,%s,%s,%s)"% (q_11,q_12,q_21,q_22))
 
-a = FreeAlgebra("a b", P, [[p, q], [q, r]])
-b = PBWAlgebra("x y z t u v",a)
-x = b.set_pbw_element('ut')
+algebra = FreeAlgebra("a b", P, np.array([[q_11,q_12],[q_21,q_22]]))
+a,b = [element.Element({word.Word([l]):1}) for  l in algebra.generators]
 
-print(x)
+pbw_definitions = [None for i in range(6)]
+pbw_definitions[0] = b
+pbw_definitions[5] = a
+pbw_definitions[1] = element.bracket(a,b) # x_a+b = [x_a,x_b]
+pbw_definitions[3] = element.bracket(a,pbw_definitions[1]) # x_2a+b = [x_a,x_a+b]
+pbw_definitions[4] = element.bracket(a,pbw_definitions[3]) # x_3a+b = [x_a,x_2a+b]
+pbw_definitions[2] = element.bracket(pbw_definitions[3],pbw_definitions[1]) # x_3a+2b = [x_2a+b,x_a+b]
+
+pbw_alg = PBWAlgebra("t u v x y z",pbw_definitions, algebra)
+t,u,v,x,y,z = pbw_alg.pbw_generators
+
+print(z.presentation)
+print(u.presentation)
+print(z.q_bilinear(u))
+
+print(x.presentation)
 
 # Example of potential future uses taken from the Zoom chat
 """
