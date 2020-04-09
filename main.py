@@ -46,7 +46,7 @@ c = a+b
 """
 
 a= letters.Letter("a")
-#b= letters.Letter("b")
+b= letters.Letter("b")
 #c= letters.Letter("c")
 d = letters.Letter("")
 
@@ -54,7 +54,7 @@ d = letters.Letter("")
 #r = word.Word([a, b], True)
 #s = word.Word([b, a])
 #t = word.Word([a,b,c])
-u = word.Word([d,a,a,d,d], True)
+u = word.Word([a,a,a,d,d,d,d,d,a,b], True)
 
 
 """

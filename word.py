@@ -22,14 +22,29 @@ class Word:
     def __init__(self, letters_list, print_stats = False):
         
         try:
-            # internally this ensures that the empty word is the word in the empty letter
+            # Basically a list of letters can be divided into three types:
+            # 1) 'Pure type': contains a non-empty list with non-unitary letters
+            # 2) 'Unit type':  contains a non-empty list with only unit letters
+            # 3) 'Empty type': The list is empty.
+            # In the first step we harmonise these types to ensure that 
+            # units do not exist in non-trivial words and 
+            # the empty word is the word in the empty letter
             # Thus it has a coproduct (and maybe other desirebal properties)
             try:
-                internal_letters_list = [x for x in letters_list if not x.is_unit()]
-                internal_letters_list = [letters.Letter("")] if not internal_letters_list else internal_letters_list
+                contains_non_unit = any(not l.is_unit() for l in letters_list)
+                
+                if contains_non_unit:
+                    internal_letters_list = [x for x in letters_list if not x.is_unit()]
+                elif not contains_non_unit and len(letters_list)>0:
+                    internal_letters_list = [letters_list[0]] 
+                    
+                else:
+                    internal_letters_list = [letters.Letter("")]              
+                #internal_letters_list = [letters.Letter("")] if not internal_letters_list else internal_letters_list
                 
                 object.__setattr__(self, "letters", tuple(internal_letters_list))
-                object.__setattr__(self, "length", len(internal_letters_list))
+                object.__setattr__(self, "length", 
+                                   len(internal_letters_list) - 1 + int(contains_non_unit))
                 
                 if ((all(type(l) is letters.Letter for l in internal_letters_list))
                     or (all(type(l) is letters.PBWLetter for l in internal_letters_list))):
