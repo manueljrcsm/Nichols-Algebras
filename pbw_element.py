@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from element import Element
-import pbw_algebra
+from universe import Universe
 
 class PBWElement(Element):
     """Class whose objects are elements in the Nichols algebra B.
@@ -54,35 +54,22 @@ class PBWElement(Element):
                     return newpoly.rewrite()
         return newpoly
 
-    def c_norm(self):
-        """Computes (self|self) in terms of the norms of the PBW generators."""
-        # TODO
-        return
 
-    def isHomogenous(self) -> bool:
-        """Checks if a polynomial is homogenous."""
-        # TODO
+# STATIC OBJECTS OF ELEMENT
+# See element.py for a TODO on improvement for these constants
+PBWElement.ZERO = PBWElement({})
+PBWElement.ONE = PBWElement({"":1})
 
-        return
-
-    @classmethod
-    def set_universe(cls, a) -> None:
-        PBWElement.universe = a
-        PBWElement.generators = a.generators
-        PBWElement.base_field = a.base_field
-        PBWElement.q_matrix = a.q_matrix
-        PBWElement.relations = a.relations
-
-def create_pbw_element(string, scalar=1):
+def create_pbw_element(word, scalar=1):
     """The most pratical way to construct a new element. Constructs individual monomials (with an optional scalar).
 
     Inputs: string, scalar (one by default).
     Output: pbw_element of the form 'scalar times string' written in the PBW basis.
     """
-    if string == 0:
-        newelement = PBWElement({'': 0})
+    if scalar:
+        newelement = PBWElement({word: scalar})
     else:
-        newelement = PBWElement({string: scalar})
+        newelement = PBWElement({'': 0})
     return newelement.rewrite()
 
 

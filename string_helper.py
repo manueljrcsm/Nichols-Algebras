@@ -59,4 +59,3 @@ def power_escape(number: int):
     return input_string.replace("0", u'\u2070').replace("1", u'\u00B9').replace("2", u'\u00B2').replace("3",
         u'\u00B3').replace("4", u'\u2074').replace("5", u'\u2075').replace("6", u'\u2076').replace("7",
         u'\u2077').replace("8", u'\u2078').replace("9", u'\u2079')
-
