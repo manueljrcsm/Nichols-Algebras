@@ -50,6 +50,8 @@ print(pe.PBWElement({test_word:1}).as_Element())
 print(test_word.degree)
 
 print(x.presentation)
+print(algebra.generators)
+print(pbw_alg.pbw_generators)
 
 # Example of potential future uses taken from the Zoom chat
 """

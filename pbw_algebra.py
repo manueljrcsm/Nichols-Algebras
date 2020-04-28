@@ -3,6 +3,7 @@
 import pbw_element
 from letters import PBWLetter
 from universe import Universe
+from collections import namedtuple
 
 try:
     from sage.combinat.q_analogues import q_factorial, q_int
@@ -19,8 +20,11 @@ class PBWAlgebra(FreeAlgebra):
             # mother_algebra.q_matrix)
         string_to_list = string_pbw_generators.split(' ')
         if len(string_to_list) == len(pbw_definitions):
-            self.pbw_generators = [PBWLetter(string_to_list[i],pbw_definitions[i]) for i in range(len(pbw_definitions))]
-
+            PBWGeneratorsTuple = namedtuple('GeneratorsTuple', string_pbw_generators)
+            self.pbw_generators = PBWGeneratorsTuple._make([PBWLetter(string_to_list[i],pbw_definitions[i]) for i in
+                                                          range(len(pbw_definitions))])
+        else:
+            raise ValueError("The number of handles does not match the number of definitions provided.")
         self.mother_algebra = mother_algebra
         self.string_generators = mother_algebra.string_generators
         self.generators = mother_algebra.string_generators

@@ -2,6 +2,7 @@ import element
 from universe import Universe
 import numpy as np
 from letters import Letter
+from collections import namedtuple
 
 
 class FreeAlgebra:
@@ -11,7 +12,8 @@ class FreeAlgebra:
         self.string_generators = string_generators
         self.base_field = base_field
 
-        self.generators: list = [Letter(handle) for handle in string_generators.split(sep=' ')]
+        GeneratorsTuple = namedtuple('GeneratorsTuple',string_generators)
+        self.generators = GeneratorsTuple._make([Letter(handle) for handle in string_generators.split(sep=' ')])
 
         self.q_matrix: dict = {}
         if q_matrix.shape == (len(self.generators), len(self.generators)):

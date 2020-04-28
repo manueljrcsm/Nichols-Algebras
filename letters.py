@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import textwrap
+
 import word as w
 from universe import Universe
 import tensor_element as te
@@ -29,7 +31,7 @@ class Letter:
         return self.handle
 
     def __repr__(self):
-        return "Letter \'" + str(self) + "\'"
+        return "Letter(\'{}\')".format(self.handle)
 
     def __setattr__(self, name: str, value):
 
@@ -108,7 +110,9 @@ class PBWLetter(Letter, object):
         return hash(self.handle)
 
     def __repr__(self):
-        return "PBWLetter \'" + str(self) + "\'"
+        str_presentation = (str(self.presentation)[:5] + "[...]") if len(str(self.presentation)) > 5 else str(
+            self.presentation)
+        return "PBWLetter(\'{}\',{!r})".format(self.handle,str_presentation)
 
     def c_bilinear(self, other):
         """ This function returns the c bilinear form (u,v) of two PBW generators u,v
