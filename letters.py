@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import textwrap
 
 import word as w
 from universe import Universe
@@ -23,11 +22,11 @@ class Letter:
             object.__setattr__(self, "coproduct", te.TensorElement(
                 {w.TensorWord((w.Word([self]), w.Word([]))): 1,
                  w.TensorWord((w.Word([]), w.Word([self]))): 1}))
-        # object.__setattr__(self, "coproduct", "Issue: can't import tensor_element.TensorElement!")
         if (print_stats ):
             print(self.stats_string())
 
     def __str__(self):
+
         return self.handle
 
     def __repr__(self):
@@ -46,10 +45,11 @@ class Letter:
         return self.handle == other.handle
 
     def __hash__(self):
+
         return hash(self.handle)
 
     def has_same_handle(self, other):
-        """ Returns whether two letter instances have the same handle"""
+        """ Returns whether two letter instances have the same handle."""
 
         return isinstance(other, Letter) and self.handle == other.handle
 

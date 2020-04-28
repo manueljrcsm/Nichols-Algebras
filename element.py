@@ -5,6 +5,7 @@ from universe import Universe
 import word as w
 
 
+
 class Element:
     """Elements in the free algebra live here.
     """
