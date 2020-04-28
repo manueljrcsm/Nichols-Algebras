@@ -26,8 +26,10 @@ class Letter:
             print(self.stats_string())
 
     def __str__(self):
-
         return self.handle
+
+    def __repr__(self):
+        return "Letter \'" + str(self) + "\'"
 
     def __setattr__(self, name: str, value):
 
@@ -42,11 +44,10 @@ class Letter:
         return self.handle == other.handle
 
     def __hash__(self):
-
         return hash(self.handle)
 
     def has_same_handle(self, other):
-        """ Returns wether two letter instances have the same handle"""
+        """ Returns whether two letter instances have the same handle"""
 
         return isinstance(other, Letter) and self.handle == other.handle
 
@@ -105,6 +106,9 @@ class PBWLetter(Letter, object):
 
     def __hash__(self):
         return hash(self.handle)
+
+    def __repr__(self):
+        return "PBWLetter \'" + str(self) + "\'"
 
     def c_bilinear(self, other):
         """ This function returns the c bilinear form (u,v) of two PBW generators u,v

@@ -17,7 +17,7 @@ class Word(UserList):
 
     The reason being that Element is a sum of Words (with scalars)and a Word is a concatenation of Letters.
     """
-    __slots__ = ("letters", "degree", "length")
+    __slots__ = ("letters", "degree", "length", "data")
 
     def __init__(self, letters_list, print_stats=False):
 
@@ -45,34 +45,39 @@ class Word(UserList):
                 object.__setattr__(self, "data", self.letters)
                 object.__setattr__(self, "length", len(internal_letters_list) - 1 + int(contains_non_unit))
 
-                if ((all(type(letter) is l.Letter for letter in internal_letters_list)) or (
-                all(type(letter) is l.PBWLetter for letter in internal_letters_list))):
-
+                if all(type(letter) is l.Letter for letter in internal_letters_list):
                     degree_dict = {}
                     for letter in internal_letters_list:
                         if not letter.is_unit():
                             degree_dict[letter] = degree_dict[letter] + 1 if (letter in degree_dict) else 1
-
+                    object.__setattr__(self, "degree", degree_dict)
+                elif all(type(letter) is l.PBWLetter for letter in internal_letters_list):
+                    degree_dict = {}
+                    for pbw_letter in internal_letters_list:
+                        if not pbw_letter.is_unit():
+                            representative: Word = list(pbw_letter.presentation.poly)[0]
+                            for letter in representative.letters:
+                                degree_dict[letter] = degree_dict[letter] + 1 if (letter in degree_dict) else 1
                     object.__setattr__(self, "degree", degree_dict)
 
-                    if (print_stats):
-                        print(self.stats_string())
                 else:
                     msg = ("The given list of letters contained incompatible types." +
                            " Please make sure to only use letters or PBWLetters.")
                     raise AssertionError(msg)
+                if (print_stats):
+                    print(self.stats_string())
             except TypeError:
-                raise TypeError("The list of letters was not iterable")
+                raise TypeError("The list of letters was not iterable.")
 
         except TypeError:
-            raise AssertionError("The given letters were not presented in the expect format.")
+            raise AssertionError("The given letters were not presented in the expected format.")
 
     def __setattr__(self, name: str, value):
         msg = "It is not allowed to change the value of the attribute '" + name + "'."
         raise AttributeError(msg)
 
     def __str__(self):
-        return "" if (self.length == 0) else string_compressor("".join(str(l) for l in self.letters))
+        return "" if (self.length == 0) else string_compressor("".join(str(each) for each in self.letters))
 
     def __add__(self, other):
         """To prevent ambiguity: Addition of words means concatenation.

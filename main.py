@@ -4,10 +4,10 @@
 from free_algebra import FreeAlgebra
 from pbw_algebra import PBWAlgebra
 import numpy as np
-import letters
-import word
-import element
-import pbw_element
+import letters as l
+import word as w
+import element as e
+import pbw_element as pe
 
 try:
     from sage.all_cmdline import FractionField,PolynomialRing,QQ  # imports sage library
@@ -23,15 +23,15 @@ except ModuleNotFoundError:  # IGNORE
      print("Sage Module not found at main,  (q_11,q_12,q_21,q_22)=(%s,%s,%s,%s)"% (q_11,q_12,q_21,q_22))
 
 algebra = FreeAlgebra("a b", P, np.array([[q_11,q_12],[q_21,q_22]]))
-a,b = [element.Element({word.Word([l]):1}) for  l in algebra.generators]
+a,b = [e.Element({w.Word([each]):1}) for each in algebra.generators]
 
 pbw_definitions = [None for i in range(6)]
 pbw_definitions[0] = b
 pbw_definitions[5] = a
-pbw_definitions[1] = element.bracket(a,b) # x_a+b = [x_a,x_b]
-pbw_definitions[3] = element.bracket(a,pbw_definitions[1]) # x_2a+b = [x_a,x_a+b]
-pbw_definitions[4] = element.bracket(a,pbw_definitions[3]) # x_3a+b = [x_a,x_2a+b]
-pbw_definitions[2] = element.bracket(pbw_definitions[3],pbw_definitions[1]) # x_3a+2b = [x_2a+b,x_a+b]
+pbw_definitions[1] = e.bracket(a,b) # x_a+b = [x_a,x_b]
+pbw_definitions[3] = e.bracket(a,pbw_definitions[1]) # x_2a+b = [x_a,x_a+b]
+pbw_definitions[4] = e.bracket(a,pbw_definitions[3]) # x_3a+b = [x_a,x_2a+b]
+pbw_definitions[2] = e.bracket(pbw_definitions[3],pbw_definitions[1]) # x_3a+2b = [x_2a+b,x_a+b]
 
 pbw_alg = PBWAlgebra("t u v x y z",pbw_definitions, algebra)
 t,u,v,x,y,z = pbw_alg.pbw_generators
@@ -44,6 +44,10 @@ print(type(z))
 t = t.as_PBWElement()
 print(type(t))
 print(z*t - t*z)
+print(type(u),type(v))
+test_word = w.Word([u,v])
+print(pe.PBWElement({test_word:1}).as_Element())
+print(test_word.degree)
 
 print(x.presentation)
 
