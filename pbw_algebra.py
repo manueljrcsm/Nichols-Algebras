@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import numpy as np
 import pbw_element
 from letters import PBWLetter
 from universe import Universe
@@ -47,9 +46,8 @@ class PBWAlgebra(FreeAlgebra):
         p = self.q_matrix[(Universe.generators[0], Universe.generators[0])]
         q = self.q_matrix[(Universe.generators[0], Universe.generators[1])]
         r = self.q_matrix[(Universe.generators[1], Universe.generators[1])]
-        self.relations['zt'] = pbw_element.PBWElement({'tz': q, 'u': 1})
-        self.relations['zu'] = pbw_element.PBWElement({'uz': p*q, 'x': 1})
-        self.relations['zx'] = pbw_element.PBWElement({'xz': p*p*q, 'y': 1})
-        self.relations['xu'] = pbw_element.PBWElement({'ux': p*p*q*q*q*r, 'v': 1})
-        self.relations['zy'] = pbw_element.PBWElement({'yz': p*p*p*q})
-        self.relations['ut'] = pbw_element.PBWElement({'tu': (1 + r - r*q*q)/(q*r), 'ttz': (1 - q*q)*(1 - q*q*r)/(q*q*r)})
+        t = self.pbw_generators[0]
+        z = self.pbw_generators[5]
+        u = self.pbw_generators[1]
+        import word as w
+        self.relations[(z,t)] = pbw_element.PBWElement({w.Word([t,z]): q, w.Word([u]): 1})

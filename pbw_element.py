@@ -22,7 +22,6 @@ class PBWElement(Element):
 
     # Class attributes
     pbw_universe = None
-    relations = {}
 
     def rewrite(self):
         """Reduction of a polynomial to its standard basis form t > u > v > x > y > z. Where it really gets
@@ -37,7 +36,7 @@ class PBWElement(Element):
         """
         # Relations are added here, this can be moved elsewhere or passed as an argument
         newpoly = PBWElement(self.poly.copy())  # create a copy to begin
-        relations = PBWElement.relations
+        relations = Universe.relations
         for term, sca in newpoly.pairs:
             # Run through the monomial terms recursively, applying the relations whenever possible. Bergman's Diamond
             # lemma guarantees this works.
@@ -46,10 +45,10 @@ class PBWElement(Element):
                 del newpoly[term]
                 return newpoly.rewrite()
             for i in range(len(term) - 1):
-                if term[i] + term[i + 1] in relations.keys():
+                if (term[i],term[i + 1]) in relations.keys():
                     # TODO: This presupposes that the relations are skew-commutations
                     del newpoly[term]
-                    newpoly += PBWElement({term[:i]: sca})*relations[term[i] + term[i + 1]]*PBWElement(
+                    newpoly += PBWElement({term[:i]: sca})*relations[(term[i],term[i + 1])]*PBWElement(
                         {term[i + 2:]: 1})
                     return newpoly.rewrite()
         return newpoly
@@ -57,8 +56,8 @@ class PBWElement(Element):
 
 # STATIC OBJECTS OF ELEMENT
 # See element.py for a TODO on improvement for these constants
-PBWElement.ZERO = PBWElement({})
-PBWElement.ONE = PBWElement({"":1})
+# PBWElement.ZERO = PBWElement({})
+# PBWElement.ONE = PBWElement({"":1})
 
 def create_pbw_element(word, scalar=1):
     """The most pratical way to construct a new element. Constructs individual monomials (with an optional scalar).
