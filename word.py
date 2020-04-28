@@ -6,8 +6,8 @@ Created on Fri Apr  3 08:36:29 2020
 """
 
 import letters as l
-from string_helper import string_compressor
 import tensor_element as te
+from string_helper import string_compressor
 from universe import Universe
 from collections import UserList
 
@@ -113,9 +113,8 @@ class Word(UserList):
             The underlying principle is that cop(ab....x)= 1@1 * cop(a)* cop(b) *... cop(x)
         """
         output = te.TensorElement({TensorWord((Word([]), Word([]))): 1})
-        for l in self.letters:
-            output *= te.TensorElement({TensorWord((Word([l]), Word([]))): 1,
-                                        TensorWord((Word([]), Word([l]))): 1})
+        for letter in self.letters:
+            output *= letter.coproduct
         return output
 
     def c_bilinear(self, other):
