@@ -7,6 +7,7 @@ import numpy as np
 import letters
 import word
 import element
+import pbw_element
 
 try:
     from sage.all_cmdline import FractionField,PolynomialRing,QQ  # imports sage library
@@ -39,7 +40,9 @@ print(z.presentation)
 print(u.presentation)
 print(z.q_bilinear(u))
 z = z.as_PBWElement()
+print(type(z))
 t = t.as_PBWElement()
+print(type(t))
 print(z*t - t*z)
 
 print(x.presentation)
@@ -58,29 +61,3 @@ b= A.get_generator("b")
 u_1 = Element.bracket(a,b)
 c = a+b
 """
-
-a= letters.Letter("a",True)
-b= letters.Letter("b")
-c= letters.Letter("c")
-
-
-r = word.Word([a, b], True)
-s = word.Word([b, a])
-t = word.Word([a,b,c])
-
-x = element.Element({r:4, s:1})
-y = element.Element({s:1, r:-1})
-z = element.Element({t:1})
-
-
-xa= x
-xb = x+z
-
-u = letters.PBWLetter("u", xa)
-v = letters.PBWLetter("v", xb)
-
-num = u.c_bilinear(v)
-
-print("The result is", num)
-
-

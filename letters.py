@@ -121,6 +121,9 @@ class PBWLetter(Letter, object):
             return 1
         return tuple(self.presentation.terms)[0].q_bilinear(tuple(other.presentation.terms)[0])
 
+    def as_Element(self):
+        return self.presentation
+
     def as_PBWElement(self):
         import pbw_element as pe
         return pe.PBWElement({self.as_Word():1})
@@ -129,7 +132,8 @@ class PBWLetter(Letter, object):
         """This function returns a string summarising the properties of the letter
         it has been called on."""
 
-        output = ("This is the PBWgenerator " + self.handle + ". It has a presentation in terms of simple generators, " + str(
+        output = ("This is the PBW generator " + self.handle + ". It has a presentation in terms of simple "
+                                                               "generators, " + str(
                 self.presentation) + ". Its coproduct is given by " + str(self.coproduct) + ".")
         return output
 

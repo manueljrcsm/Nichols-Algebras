@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from element import Element
 from universe import Universe
+import word as w
 
 class PBWElement(Element):
     """Class whose objects are elements in the Nichols algebra B.
@@ -52,6 +53,17 @@ class PBWElement(Element):
                         {term[i + 2:]: 1})
                     return newpoly.rewrite()
         return newpoly
+
+    def as_Element(self):
+        """ Takes a PBWElement and expands every PBWLetter into its presentation as an Element. Returns the
+        corresponding Element object."""
+        result = Element({})
+        for term,sca in self.pairs:
+            summand = Element({w.Word([]):sca})
+            for letter in term.letters:
+                summand *= letter.presentation
+            result += summand
+        return result
 
 
 # STATIC OBJECTS OF ELEMENT
