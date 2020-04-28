@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-import word
+import word as w
 from universe import Universe
-import tensor_element
+import tensor_element as te
+
 
 
 class Letter:
@@ -13,15 +14,15 @@ class Letter:
     def __init__(self, handle: str, print_stats=False):
 
         object.__setattr__(self, "handle", handle)
-        # if handle == "":
-        #     object.__setattr__(self, "coproduct",tensor_element.TensorElement({word.TensorWord((word.Word([self]),
-        #                                                                                         word.Word([self]))):1}))
-        # else:
-        #     object.__setattr__(self, "coproduct", tensor_element.TensorElement(
-        #         {word.TensorWord((word.Word([self]), word.Word([]))): 1,
-        #          word.TensorWord((word.Word([]), word.Word([self]))): 1}))
-        object.__setattr__(self, "coproduct", "Issue: can't import tensor_element.TensorElement!")
-        if (print_stats):
+        if handle == "":
+            object.__setattr__(self, "coproduct",te.TensorElement({w.TensorWord((w.Word([self]),
+                                                                                 w.Word([self]))):1}))
+        else:
+            object.__setattr__(self, "coproduct", te.TensorElement(
+                {w.TensorWord((w.Word([self]), w.Word([]))): 1,
+                 w.TensorWord((w.Word([]), w.Word([self]))): 1}))
+        # object.__setattr__(self, "coproduct", "Issue: can't import tensor_element.TensorElement!")
+        if (print_stats ):
             print(self.stats_string())
 
     def __str__(self):
@@ -57,6 +58,13 @@ class Letter:
             raise AssertionError(msg)
 
         return 1 if (self == other) else 0
+
+    def as_Word(self):
+        return w.Word([self])
+
+    def as_Element(self):
+        import element as e
+        return e.Element({self.as_Word():1})
 
     def stats_string(self):
         """This function returns a string summarising the properties of the letter it has been called on."""
@@ -112,6 +120,10 @@ class PBWLetter(Letter, object):
         if self.presentation.poly == {} or other.presentation.poly == {}:
             return 1
         return tuple(self.presentation.terms)[0].q_bilinear(tuple(other.presentation.terms)[0])
+
+    def as_PBWElement(self):
+        import pbw_element as pe
+        return pe.PBWElement({self.as_Word():1})
 
     def stats_string(self):
         """This function returns a string summarising the properties of the letter

@@ -4,9 +4,9 @@
 from free_algebra import FreeAlgebra
 from pbw_algebra import PBWAlgebra
 import numpy as np
+import letters
 import word
 import element
-import letters
 
 try:
     from sage.all_cmdline import FractionField,PolynomialRing,QQ  # imports sage library
@@ -38,6 +38,9 @@ t,u,v,x,y,z = pbw_alg.pbw_generators
 print(z.presentation)
 print(u.presentation)
 print(z.q_bilinear(u))
+z = z.as_PBWElement()
+t = t.as_PBWElement()
+print(z*t - t*z)
 
 print(x.presentation)
 
