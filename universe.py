@@ -6,7 +6,7 @@ class Universe:
     generators = None
     base_field = None
     q_matrix = None
-    relations = None
+    relations = {}
 
     @classmethod
     def set_universe(self, algebra) -> None:
