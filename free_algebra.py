@@ -7,6 +7,7 @@ import word
 from universe import Universe
 import numpy as np
 from letters import Letter
+from collections import namedtuple
 
 class FreeAlgebra:
     """Where the free algebra itself lives. It serves a structure superclass for PBW_algebra."""
@@ -29,6 +30,7 @@ class FreeAlgebra:
             q_matrix = np.matrix([[1 for x in generators_list] for y in generators_list])
                   
         if not q_matrix.shape == (len(generators_list), len(generators_list)):
+
             msg = "The matrix has the wrong dimensions. Expected ({2},{2}), but got ({2},{2}).".format(
                 q_matrix.shape[0], q_matrix.shape[1], len(self.generators))
             raise AssertionError(msg)

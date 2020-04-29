@@ -1,5 +1,6 @@
 from free_algebra import FreeAlgebra
 import numpy as np
+"""
 #from pbw_algebra import PBWAlgebra
 #import numpy as np
 #import word
@@ -9,6 +10,11 @@ import numpy as np
 
 
 alg = FreeAlgebra("a,b", {'q':[7,2], 'r': [3,2]}, np.matrix([["q","r"],["r","q"]]), True)
+"""
+import letters as l
+import word as w
+import element as e
+import pbw_element as pe
 
 a = alg.get_element("a")
 b = alg.get_element("b")
@@ -23,15 +29,15 @@ b = alg.get_element("b")
 
 """
 algebra = FreeAlgebra("a b", P, np.array([[q_11,q_12],[q_21,q_22]]))
-a,b = [element.Element({word.Word([l]):1}) for  l in algebra.generators]
+a,b = [e.Element({w.Word([each]):1}) for each in algebra.generators]
 
 pbw_definitions = [None for i in range(6)]
 pbw_definitions[0] = b
 pbw_definitions[5] = a
-pbw_definitions[1] = element.bracket(a,b) # x_a+b = [x_a,x_b]
-pbw_definitions[3] = element.bracket(a,pbw_definitions[1]) # x_2a+b = [x_a,x_a+b]
-pbw_definitions[4] = element.bracket(a,pbw_definitions[3]) # x_3a+b = [x_a,x_2a+b]
-pbw_definitions[2] = element.bracket(pbw_definitions[3],pbw_definitions[1]) # x_3a+2b = [x_2a+b,x_a+b]
+pbw_definitions[1] = e.bracket(a,b) # x_a+b = [x_a,x_b]
+pbw_definitions[3] = e.bracket(a,pbw_definitions[1]) # x_2a+b = [x_a,x_a+b]
+pbw_definitions[4] = e.bracket(a,pbw_definitions[3]) # x_3a+b = [x_a,x_2a+b]
+pbw_definitions[2] = e.bracket(pbw_definitions[3],pbw_definitions[1]) # x_3a+2b = [x_2a+b,x_a+b]
 
 
 pbw_alg = PBWAlgebra("t u v x y z",pbw_definitions, algebra)
@@ -40,8 +46,19 @@ t,u,v,x,y,z = pbw_alg.pbw_generators
 print(z.presentation)
 print(u.presentation)
 print(z.q_bilinear(u))
+z = z.as_PBWElement()
+print(type(z))
+t = t.as_PBWElement()
+print(type(t))
+print(z*t - t*z)
+print(type(u),type(v))
+test_word = w.Word([u,v])
+print(pe.PBWElement({test_word:1}).as_Element())
+print(test_word.degree)
 
 print(x.presentation)
+print(algebra.generators)
+print(pbw_alg.pbw_generators)
 
 """
 
@@ -58,36 +75,3 @@ a = get_generator("a")
 b= A.get_generator("b")
 u_1 = Element.bracket(a,b)
 c = a+b
-"""
-
-
-#a= letters.Letter("a",True)
-#b= letters.Letter("b")
-#c= letters.Letter("c")
-#d = letters.Letter("",True)
-
-
-#r = word.Word([a, b], True)
-#s = word.Word([b, a])
-#t = word.Word([a,b,c])
-#u = word.Word([a,a,a,d,d,d,d,d,a,b], True)
-
-#FreeAlgebra("a,b", {'q':[3,2], 'r': [3,5]}, [["q","r"],["r","q"]])
-
-
-"""
-x = element.Element({r:4, s:1})
-y = element.Element({s:1, r:-1})
-z = element.Element({t:1})
-
-
-xa= x
-xb = x+z
-
-u = letters.PBWLetter("u", xa)
-v = letters.PBWLetter("v", xb)
-
-num = u.c_bilinear(v)
-
-print("The result is", num)
-"""

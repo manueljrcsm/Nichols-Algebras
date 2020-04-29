@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from element import Element
 from universe import Universe
+import word as w
 
 class PBWElement(Element):
     """Class whose objects are elements in the Nichols algebra B.
@@ -22,7 +23,6 @@ class PBWElement(Element):
 
     # Class attributes
     pbw_universe = None
-    relations = {}
 
     def rewrite(self):
         """Reduction of a polynomial to its standard basis form t > u > v > x > y > z. Where it really gets
@@ -46,19 +46,30 @@ class PBWElement(Element):
                 del newpoly[term]
                 return newpoly.rewrite()
             for i in range(len(term) - 1):
-                if term[i] + term[i + 1] in relations.keys():
+                if (term[i],term[i + 1]) in relations.keys():
                     # TODO: This presupposes that the relations are skew-commutations
                     del newpoly[term]
-                    newpoly += PBWElement({term[:i]: sca})*relations[term[i] + term[i + 1]]*PBWElement(
+                    newpoly += PBWElement({term[:i]: sca})*relations[(term[i],term[i + 1])]*PBWElement(
                         {term[i + 2:]: 1})
                     return newpoly.rewrite()
         return newpoly
 
+    def as_Element(self):
+        """ Takes a PBWElement and expands every PBWLetter into its presentation as an Element. Returns the
+        corresponding Element object."""
+        result = Element({})
+        for term,sca in self.pairs:
+            summand = Element({w.Word([]):sca})
+            for letter in term.letters:
+                summand *= letter.presentation
+            result += summand
+        return result
+
 
 # STATIC OBJECTS OF ELEMENT
 # See element.py for a TODO on improvement for these constants
-PBWElement.ZERO = PBWElement({})
-PBWElement.ONE = PBWElement({"":1})
+# PBWElement.ZERO = PBWElement({})
+# PBWElement.ONE = PBWElement({"":1})
 
 def create_pbw_element(word, scalar=1):
     """The most pratical way to construct a new element. Constructs individual monomials (with an optional scalar).

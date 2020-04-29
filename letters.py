@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
-import element
-import tensor_element
-import word
+import word as w
 from universe import Universe
-
+import tensor_element as te
 
 class Letter:
     """Class where the algebra generators live.
@@ -16,18 +14,20 @@ class Letter:
 
         object.__setattr__(self, "handle", handle)
         if handle == "":
-            object.__setattr__(self, "coproduct",tensor_element.TensorElement({word.TensorWord((word.Word([self]),
-                                                                                                word.Word([self]))):1}))
+            object.__setattr__(self, "coproduct",te.TensorElement({w.TensorWord((w.Word([self]),                                                                                w.Word([self]))):1}))
         else:
-            object.__setattr__(self, "coproduct", tensor_element.TensorElement(
-                {word.TensorWord((word.Word([self]), word.Word([]))): 1,
-                 word.TensorWord((word.Word([]), word.Word([self]))): 1}))
-        if (print_stats):
+            object.__setattr__(self, "coproduct", te.TensorElement(
+                {w.TensorWord((w.Word([self]), w.Word([]))): 1,
+                 w.TensorWord((w.Word([]), w.Word([self]))): 1}))
+        if (print_stats ):
             print(self.stats_string())
 
     def __str__(self):
 
         return self.handle
+
+    def __repr__(self):
+        return "Letter(\'{}\')".format(self.handle)
 
     def __setattr__(self, name: str, value):
         
@@ -47,7 +47,7 @@ class Letter:
         return hash(self.handle)
 
     def has_same_handle(self, other):
-        """ Returns wether two letter instances have the same handle"""
+        """ Returns whether two letter instances have the same handle."""
 
         return isinstance(other, Letter) and self.handle == other.handle
 
@@ -59,6 +59,13 @@ class Letter:
             raise AssertionError(msg)
 
         return 1 if (self == other) else 0
+
+    def as_Word(self):
+        return w.Word([self])
+
+    def as_Element(self):
+        import element as e
+        return e.Element({self.as_Word():1})
 
     def stats_string(self):
         """This function returns a string summarising the properties of the letter it has been called on."""
@@ -105,10 +112,11 @@ class PBWLetter(Letter, object):
     def __hash__(self):
         return hash(self.handle)
 
-    def get_c(self):
-        """Return the c of the PBW letter, i.e., (self|self)."""
-        return self.c_bilinear(self)
-    
+    def __repr__(self):
+        str_presentation = (str(self.presentation)[:5] + "[...]") if len(str(self.presentation)) > 5 else str(
+            self.presentation)
+        return "PBWLetter(\'{}\',{!r})".format(self.handle,str_presentation)
+
     def c_bilinear(self, other):
         """ This function returns the c bilinear form (u,v) of two PBW generators u,v
         It relies on the implementation of the c bilinear of its underlying  elements. """
@@ -124,11 +132,19 @@ class PBWLetter(Letter, object):
             return 1
         return tuple(self.presentation.terms)[0].q_bilinear(tuple(other.presentation.terms)[0])
 
+    def as_Element(self):
+        return self.presentation
+
+    def as_PBWElement(self):
+        import pbw_element as pe
+        return pe.PBWElement({self.as_Word():1})
+
     def stats_string(self):
         """This function returns a string summarising the properties of the letter
         it has been called on."""
 
-        output = ("This is the PBWgenerator " + self.handle + ". It has a presentation in terms of simple generators, " + str(
+        output = ("This is the PBW generator " + self.handle + ". It has a presentation in terms of simple "
+                                                               "generators, " + str(
                 self.presentation) + ". Its coproduct is given by " + str(self.coproduct) + ".")
         return output
 

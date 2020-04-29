@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
-import tensor_element
+import tensor_element as te
 from universe import Universe
-import word
+import word as w
+
 
 class Element:
     """Elements in the free algebra live here.
@@ -84,7 +85,7 @@ class Element:
     def __sub__(self, other):
         """Defines subtraction of two elements with the '-' syntax in python.
         """
-        return self + type(self)({word.Word([]): -1})*other
+        return self + type(self)({w.Word([]): -1})*other
 
     def __mul__(self, other):
         """Defines multiplication of two elements.
@@ -141,8 +142,8 @@ class Element:
             and returns the sum of all these tensor elements
         """
         return sum([term.coproduct().scalar_mulitply(sca) for term, sca in self.pairs], 
-                   tensor_element.TensorElement({word.TensorWord(
-                       [word.Word([]), word.Word([])]):0}))
+                   te.TensorElement({w.TensorWord(
+                       [w.Word([]), w.Word([])]):0}))
 
     def c_bilinear(self, other):
         """
@@ -210,7 +211,7 @@ def bracket(first: Element, second: Element) -> Element:
     return result
 
 
-def word_bracket(word1: word.Word, word2: word.Word) -> Element:
+def word_bracket(word1: w.Word, word2: w.Word) -> Element:
     """Computes the bracket [word1,word2]_q between homogeneous components."""
     first = Element({word1: 1})
     second = Element({word2: 1})

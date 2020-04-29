@@ -5,19 +5,19 @@ Created on Fri Apr  3 08:36:29 2020
 @author: Sebas
 """
 
-import letters
+import letters as l
+import tensor_element as te
 from string_helper import string_compressor
-import tensor_element
-from ucf import UCFNumber #TODO just for testing!
 from universe import Universe
+from collections import UserList
 
 
-class Word:
+class Word(UserList):
     """This class is used as a bridge between letters and elements.
 
     The reason being that Element is a sum of Words (with scalars)and a Word is a concatenation of Letters.
     """
-    __slots__ = ("letters", "degree", "length")
+    __slots__ = ("letters", "degree", "length", "data")
 
 
     def __init__(self, letters_list, print_stats=False):
@@ -31,47 +31,53 @@ class Word:
             # the empty word is the word in the empty letter
             # Thus it has a coproduct (and maybe other desirable properties)
             try:
-                contains_non_unit = any(not l.is_unit() for l in letters_list)
+                contains_non_unit = any(not letter.is_unit() for letter in letters_list)
 
                 if contains_non_unit:
                     internal_letters_list = [x for x in letters_list if not x.is_unit()]
                 elif not contains_non_unit and len(letters_list) > 0:
                     internal_letters_list = [letters_list[0]]
                 else:
-                    internal_letters_list = [letters.Letter(
-                        "")]  # internal_letters_list = [letters.Letter("")] if not internal_letters_list else internal_letters_list
+                    internal_letters_list = [l.Letter("")]  # internal_letters_list = [l.Letter("")] if not
+                    # internal_letters_list else internal_letters_list
 
                 object.__setattr__(self, "letters", tuple(internal_letters_list))
+                object.__setattr__(self, "data", self.letters)
                 object.__setattr__(self, "length", len(internal_letters_list) - 1 + int(contains_non_unit))
 
-                if ((all(type(l) is letters.Letter for l in internal_letters_list)) or (
-                all(type(l) is letters.PBWLetter for l in internal_letters_list))):
-
+                if all(type(letter) is l.Letter for letter in internal_letters_list):
                     degree_dict = {}
-                    for l in internal_letters_list:
-                        if not l.is_unit():
-                            degree_dict[l] = degree_dict[l] + 1 if (l in degree_dict) else 1
-
+                    for letter in internal_letters_list:
+                        if not letter.is_unit():
+                            degree_dict[letter] = degree_dict[letter] + 1 if (letter in degree_dict) else 1
+                    object.__setattr__(self, "degree", degree_dict)
+                elif all(type(letter) is l.PBWLetter for letter in internal_letters_list):
+                    degree_dict = {}
+                    for pbw_letter in internal_letters_list:
+                        if not pbw_letter.is_unit():
+                            representative: Word = list(pbw_letter.presentation.poly)[0]
+                            for letter in representative.letters:
+                                degree_dict[letter] = degree_dict[letter] + 1 if (letter in degree_dict) else 1
                     object.__setattr__(self, "degree", degree_dict)
 
-                    if (print_stats):
-                        print(self.stats_string())
                 else:
-                    msg = (
-                                "The given list of letters contained incompatible types." + " Please make sure to only use letters or PBWLetters.")
+                    msg = ("The given list of letters contained incompatible types." +
+                           " Please make sure to only use letters or PBWLetters.")
                     raise AssertionError(msg)
+                if (print_stats):
+                    print(self.stats_string())
             except TypeError:
-                raise TypeError("The list of letters was not iterable")
+                raise TypeError("The list of letters was not iterable.")
 
         except TypeError:
-            raise AssertionError("The given letters were not presented in the expect format.")
+            raise AssertionError("The given letters were not presented in the expected format.")
 
     def __setattr__(self, name: str, value):
         msg = "It is not allowed to change the value of the attribute '" + name + "'."
         raise AttributeError(msg)
 
     def __str__(self):
-        return "" if (self.length == 0) else string_compressor("".join(str(l) for l in self.letters))
+        return "" if (self.length == 0) else string_compressor("".join(str(each) for each in self.letters))
 
     def __add__(self, other):
         """To prevent ambiguity: Addition of words means concatenation.
@@ -104,14 +110,19 @@ class Word:
     def __hash__(self):
         return hash(str(self))
 
+    def __getitem__(self, i):
+        res = self.data[i]
+        return type(self)(res) if isinstance(i, slice) else res
+
     def coproduct(self):
         """Computes the coproduct of a word.
 
             The underlying principle is that cop(ab....x)= 1@1 * cop(a)* cop(b) *... cop(x)
         """
-        output = tensor_element.TensorElement({TensorWord((Word([]), Word([]))): 1})
-        for l in self.letters:
-            output *= l.coproduct
+        output = te.TensorElement({TensorWord((Word([]), Word([]))): 1})
+        for letter in self.letters:
+            output *= letter.coproduct
+
         return output
 
     def c_bilinear(self, other):
@@ -154,7 +165,6 @@ class Word:
 
     def q_bilinear(self, other):
         
-        
         if self == Word([]) or other == Word([]):
             return 1
 
@@ -175,8 +185,10 @@ class Word:
 
     def is_unit(self):
         return self.length == 0
-    
-    
+
+# STATIC CONSTANTS
+# Word.EMPTY = Word([])
+
 class TensorWord:
     __slots__ = ("words", "tensor_degree")
 
@@ -247,4 +259,5 @@ class TensorWord:
                 extended_term.extend(list(self.words)[1:])
 
                 output_dict[TensorWord(extended_term)] = sca
-            return tensor_element.TensorElement(output_dict)
+
+            return te.TensorElement(output_dict)
