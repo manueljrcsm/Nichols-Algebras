@@ -8,6 +8,7 @@ Created on Fri Apr  3 08:36:29 2020
 import letters
 from string_helper import string_compressor
 import tensor_element
+from ucf import UCFNumber #TODO just for testing!
 from universe import Universe
 
 
@@ -152,8 +153,9 @@ class Word:
         return output_number
 
     def q_bilinear(self, other):
-
-        if self == Word.EMPTY or other == Word.EMPTY:
+        
+        
+        if self == Word([]) or other == Word([]):
             return 1
 
         result = 1
@@ -173,10 +175,8 @@ class Word:
 
     def is_unit(self):
         return self.length == 0
-
-# STATIC CONSTANTS
-Word.EMPTY = Word([])
-
+    
+    
 class TensorWord:
     __slots__ = ("words", "tensor_degree")
 

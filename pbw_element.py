@@ -37,7 +37,7 @@ class PBWElement(Element):
         """
         # Relations are added here, this can be moved elsewhere or passed as an argument
         newpoly = PBWElement(self.poly.copy())  # create a copy to begin
-        relations = PBWElement.relations
+        relations = Universe.relations
         for term, sca in newpoly.pairs:
             # Run through the monomial terms recursively, applying the relations whenever possible. Bergman's Diamond
             # lemma guarantees this works.

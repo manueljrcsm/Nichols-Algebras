@@ -8,7 +8,7 @@ from universe import Universe
 try:
     from sage.combinat.q_analogues import q_factorial, q_int
 except:
-    print('Sage module not found')
+    print('Sage modules q_factorial and/or q_int not found')
 from free_algebra import FreeAlgebra
 
 class PBWAlgebra(FreeAlgebra):
@@ -21,7 +21,7 @@ class PBWAlgebra(FreeAlgebra):
         string_to_list = string_pbw_generators.split(' ')
         if len(string_to_list) == len(pbw_definitions):
             self.pbw_generators = [PBWLetter(string_to_list[i],pbw_definitions[i]) for i in range(len(pbw_definitions))]
-
+        
         self.mother_algebra = mother_algebra
         self.string_generators = mother_algebra.string_generators
         self.generators = mother_algebra.string_generators

@@ -23,26 +23,26 @@ class Element:
         (element)'.
         """
         word = ""
-        i = 0
+
         for term, sca in self.pairs:
             # Run through the monomial terms of the element.z
             scalar = str(sca)
+            sign = " + "
+            if scalar[0]== "-":
+                    sign = " - "
+                    scalar = str(-1*sca)
             if scalar == "1" and str(term) != "":
                 # If the coefficient of a term is 1, then it is ommited.
                 scalar = ""
-            if i > 0:
-                # Adds a plus sign between consecutive terms.
-                word += " + "
-            if len(scalar) > 3 or scalar[0:1] == "-":
-                # Terms with a minus sign or complicated elements from K are put under  parentheses, for clarity.
+            elif "+" or " - " in scalar:
                 scalar = "(" + scalar + ")"
-            word += scalar + str(term)  # present does some eye-candy on the monomial string
-            # representation.
-            i += 1
+            
+            word += sign + scalar + str(term)
+            
         if word == "":  # Empty dictionaries correspond to the 0 element.
             return "0"
         else:
-            return word
+            return word[3:]
 
     def __eq__(self, other):
         """Defines when two elements are equal.
@@ -84,7 +84,7 @@ class Element:
     def __sub__(self, other):
         """Defines subtraction of two elements with the '-' syntax in python.
         """
-        return self + type(self)({word.Word.EMPTY: -1})*other
+        return self + type(self)({word.Word([]): -1})*other
 
     def __mul__(self, other):
         """Defines multiplication of two elements.
@@ -108,7 +108,7 @@ class Element:
         """Scales an element by the given number."""
 
         if number == 0:
-            return Element.ZERO
+            return ElementZERO
         # TODO CHECK THAT NUMBER IS INT FLOAT SAGE_SCALAR
         if number == 1:
             return Element(self.poly.copy())

@@ -1,23 +1,27 @@
 from free_algebra import FreeAlgebra
-from pbw_algebra import PBWAlgebra
 import numpy as np
-import word
-import element
-import letters
+#from pbw_algebra import PBWAlgebra
+#import numpy as np
+#import word
+#import element
+#import letters
 
-try:
-    from sage.all_cmdline import FractionField,PolynomialRing,QQ  # imports sage library
 
-    names = ('q_11', 'q_12', 'q_21','q_22')  # tuple of strings with the q matrix
-    P = FractionField(PolynomialRing(QQ, 4, names))
-    (q_11,q_12,q_21,q_22) = P._first_ngens(4)
-    print(P)
 
-except ModuleNotFoundError:  # IGNORE
-     (q_11,q_12,q_21,q_22) = (2,3,5,7)
-     P = None
-     print("Sage Module not found at main,  (q_11,q_12,q_21,q_22)=(%s,%s,%s,%s)"% (q_11,q_12,q_21,q_22))
+alg = FreeAlgebra("a,b", {'q':[7,2], 'r': [3,2]}, np.matrix([["q","r"],["r","q"]]), True)
 
+a = alg.get_element("a")
+b = alg.get_element("b")
+
+#u = alg.create_pbw_letter("u" , alg.bracket( alg.generators["a"], alg.generators["b"]) )
+
+#v = alg.create_pbw_letter("v" , alg.bracket( alg.generators["a"], u) )
+
+
+
+
+
+"""
 algebra = FreeAlgebra("a b", P, np.array([[q_11,q_12],[q_21,q_22]]))
 a,b = [element.Element({word.Word([l]):1}) for  l in algebra.generators]
 
@@ -39,6 +43,8 @@ print(z.q_bilinear(u))
 
 print(x.presentation)
 
+"""
+
 # Example of potential future uses taken from the Zoom chat
 """
 A = FreeAlgebra("a b")
@@ -54,18 +60,19 @@ u_1 = Element.bracket(a,b)
 c = a+b
 """
 
-a= letters.Letter("a")
 
-a= letters.Letter("a",True)
-b= letters.Letter("b")
+#a= letters.Letter("a",True)
+#b= letters.Letter("b")
 #c= letters.Letter("c")
-d = letters.Letter("")
+#d = letters.Letter("",True)
 
 
 #r = word.Word([a, b], True)
 #s = word.Word([b, a])
 #t = word.Word([a,b,c])
-u = word.Word([a,a,a,d,d,d,d,d,a,b], True)
+#u = word.Word([a,a,a,d,d,d,d,d,a,b], True)
+
+#FreeAlgebra("a,b", {'q':[3,2], 'r': [3,5]}, [["q","r"],["r","q"]])
 
 
 """

@@ -7,6 +7,7 @@ Created on Wed Apr  1 20:00:44 2020
 
 import word
 
+
 class TensorElement:
     """Its objects are a formal sum of pure tensors in A^{\otimes 2}  with scalar coefficients,
     pure tensors are a pair (tuple) of objects of the class element (NOT simply strings).
@@ -32,18 +33,28 @@ class TensorElement:
             raise AssertionError(msg)
 
     def __str__(self):
-
+        
         word = ""
-        for tensor_term, sca in self.pairs:
-            scalar = str(abs(sca)) if (sca != 1) else ""
-            word = word + " + " if (sca > 0) else word + " - "
-            word += scalar + str(tensor_term)
-        if len(word) == 0:
-            return ""
-        elif word[0:3] == " + ":
-            return word[3:]
+
+        for term, sca in self.pairs:
+            # Run through the monomial terms of the element.z
+            scalar = str(sca)
+            sign = " + "
+            if scalar[0]== "-":
+                    sign = " - "
+                    scalar = str(-1*sca)
+            if scalar == "1" and not term.words[0].is_unit() :
+                # If the coefficient of a term is 1, then it is ommited.
+                scalar = ""
+            elif "+" in scalar or "-" in scalar:
+                scalar = "(" + scalar + ")"
+            
+            word += sign + scalar + str(term)
+            
+        if word == "":  # Empty dictionaries correspond to the 0 element.
+            return "0"
         else:
-            return word
+            return word[3:]
 
     def __setattr__(self, name: str, value):
 
@@ -71,7 +82,13 @@ class TensorElement:
             for tensor_term_1, sca_1 in self.pairs:
                 for tensor_term_2, sca_2 in other.pairs:
                     new_term = tensor_term_1 + tensor_term_2
-                    new_sca = sca_1*sca_2
+                    braiding_sca= 1
+                    for i in range(tensor_term_2.tensor_degree):
+                        for j in range(tensor_term_1.tensor_degree, i, -1):
+                            braiding_sca*= tensor_term_1.words[j-1].q_bilinear(tensor_term_2.words[i])
+                    new_sca = braiding_sca*sca_1*sca_2
+                    
+                    #TODO DEPLOY BRAIDING
 
                     output_dict[new_term] = (output_dict[new_term] + new_sca if (new_term in output_dict) else new_sca)
             return TensorElement(output_dict)

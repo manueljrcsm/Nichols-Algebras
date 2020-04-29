@@ -12,17 +12,16 @@ class Letter:
     __slots__ =("handle", "coproduct")
 
 
-    def __init__(self, handle: str, print_stats=False):
+    def __init__(self, handle: str, print_stats = False):
 
         object.__setattr__(self, "handle", handle)
-        # if handle == "":
-        #     object.__setattr__(self, "coproduct",tensor_element.TensorElement({word.TensorWord((word.Word([self]),
-        #                                                                                         word.Word([self]))):1}))
-        # else:
-        #     object.__setattr__(self, "coproduct", tensor_element.TensorElement(
-        #         {word.TensorWord((word.Word([self]), word.Word([]))): 1,
-        #          word.TensorWord((word.Word([]), word.Word([self]))): 1}))
-        object.__setattr__(self, "coproduct", "Issue: can't import tensor_element.TensorElement!")
+        if handle == "":
+            object.__setattr__(self, "coproduct",tensor_element.TensorElement({word.TensorWord((word.Word([self]),
+                                                                                                word.Word([self]))):1}))
+        else:
+            object.__setattr__(self, "coproduct", tensor_element.TensorElement(
+                {word.TensorWord((word.Word([self]), word.Word([]))): 1,
+                 word.TensorWord((word.Word([]), word.Word([self]))): 1}))
         if (print_stats):
             print(self.stats_string())
 
@@ -69,6 +68,9 @@ class Letter:
 
     def is_unit(self):
         return self.handle in ("", "1")
+    
+    def to_element(self):
+        return element.Element({word.Word([self]): 1})
 
 
 class PBWLetter(Letter, object):
