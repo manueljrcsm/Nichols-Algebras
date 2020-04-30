@@ -23,7 +23,7 @@ class FreeAlgebra:
                     col = self.generators[j]
                     self.q_matrix[(row, col)] = q_matrix[i][j]
         else:
-            msg = "The matrix has the wrong dimensions. Expected ({2},{2}), but got ({2},{2}).".format(
+            msg = "The matrix has the wrong dimensions. Expected ({0},{1}), but got ({2},{2}).".format(
                 q_matrix.shape[0], q_matrix.shape[1], len(self.generators))
             raise AssertionError(msg)
 

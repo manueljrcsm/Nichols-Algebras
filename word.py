@@ -137,6 +137,9 @@ class Word(UserList):
             msg = ("The c_bilinear form of incompatible types was called." + " Execution is aborted.")
             raise AssertionError(msg)
 
+        if not all(type(letter) is l.Letter for letter in self.letters):
+            raise AssertionError("C_bilinear form is only defined for Words of Letters.")
+
         output_number = 0
         # Step 1: Reduce the length of self
         if self.length > 1:
