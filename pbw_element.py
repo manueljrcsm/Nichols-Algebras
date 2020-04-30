@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from element import Element
-from universe import Universe
+import universe as u
 import word as w
 
 class PBWElement(Element):
@@ -37,7 +37,7 @@ class PBWElement(Element):
         """
         # Relations are added here, this can be moved elsewhere or passed as an argument
         newpoly = PBWElement(self.poly.copy())  # create a copy to begin
-        relations = Universe.relations
+        relations = u.Universe.relations
         for term, sca in newpoly.pairs:
             # Run through the monomial terms recursively, applying the relations whenever possible. Bergman's Diamond
             # lemma guarantees this works.

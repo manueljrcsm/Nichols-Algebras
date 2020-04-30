@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 import word as w
-from universe import Universe
+import element as e
 import tensor_element as te
+import pbw_element as pe
+import universe as u
 
 class Letter:
     """Class where the algebra generators live.
@@ -13,12 +15,11 @@ class Letter:
     def __init__(self, handle: str, print_stats = False):
 
         object.__setattr__(self, "handle", handle)
-        if handle == "":
-            object.__setattr__(self, "coproduct",te.TensorElement({w.TensorWord((w.Word([self]),                                                                                w.Word([self]))):1}))
-        else:
-            object.__setattr__(self, "coproduct", te.TensorElement(
-                {w.TensorWord((w.Word([self]), w.Word([]))): 1,
-                 w.TensorWord((w.Word([]), w.Word([self]))): 1}))
+        object.__setattr__(self, "coproduct", 
+            te.TensorElement({w.TensorWord((w.Word([self]), w.Word([self]))): 1})
+            if handle in ("", "1") else
+            te.TensorElement({w.TensorWord((w.Word([self]), u.Universe.WordEMPTY)): 1,
+                 w.TensorWord((u.Universe.WordEMPTY, w.Word([self]))): 1}))
         if (print_stats ):
             print(self.stats_string())
 
@@ -60,25 +61,23 @@ class Letter:
 
         return 1 if (self == other) else 0
 
-    def as_Word(self):
+    def to_Word(self):
+        
         return w.Word([self])
 
-    def as_Element(self):
-        import element as e
-        return e.Element({self.as_Word():1})
+    def to_Element(self):
+
+        return e.Element({self.to_Word():1})
 
     def stats_string(self):
         """This function returns a string summarising the properties of the letter it has been called on."""
 
-        output = ("This is the generator " + self.handle + ". Its coproduct is " + str(self.coproduct) + ".")
+        output = ("--- Letter represented by " + self.handle + ". Coproduct: " + str(self.coproduct) + ". ---")
         return output
 
     def is_unit(self):
         return self.handle in ("", "1")
     
-    def to_element(self):
-        return element.Element({word.Word([self]): 1})
-
 
 class PBWLetter(Letter, object):
     """Class where the PBW generators live.
@@ -132,41 +131,13 @@ class PBWLetter(Letter, object):
             return 1
         return tuple(self.presentation.terms)[0].q_bilinear(tuple(other.presentation.terms)[0])
 
-    def as_Element(self):
-        return self.presentation
-
-    def as_PBWElement(self):
-        import pbw_element as pe
-        return pe.PBWElement({self.as_Word():1})
+    def to_PBWElement(self):
+        return pe.PBWElement({self.to_Word():1})
 
     def stats_string(self):
         """This function returns a string summarising the properties of the letter
         it has been called on."""
-
-        output = ("This is the PBW generator " + self.handle + ". It has a presentation in terms of simple "
-                                                               "generators, " + str(
-                self.presentation) + ". Its coproduct is given by " + str(self.coproduct) + ".")
+        output = ("--- PBW Letter represented by " + self.handle + ".\n"
+                  + "    Presentation in terms of simple letters: " + str(self.presentation) +". \n"
+                  + "    Coproduct: " + str(self.coproduct) + ". ---")
         return output
-
-
-# Consider importing sage.combinat.q_analogues.q_int outside of Anaconda (running via a SAGE Jupyter Notebook),
-# similar for q_factorial.
-def q_int(n: int, q):
-    result = 0
-    for i in range(n):
-        result += q**i
-    return result
-
-
-def q_factorial(n: int, q):
-    result = 1
-    for i in range(n):
-        result *= q_int(i + 1, q)
-    return result
-
-
-def q_bilinear(first: PBWLetter, second: PBWLetter):
-    """Computes the q-bilinear form between two PBW generators."""
-    #TODO
-
-    return

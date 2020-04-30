@@ -1,4 +1,5 @@
 from free_algebra import FreeAlgebra
+from universe import Universe as U
 import numpy as np
 """
 #from pbw_algebra import PBWAlgebra
@@ -9,15 +10,25 @@ import numpy as np
 
 
 
-alg = FreeAlgebra("a,b", {'q':[7,2], 'r': [3,2]}, np.matrix([["q","r"],["r","q"]]), True)
+
 """
 import letters as l
 import word as w
 import element as e
 import pbw_element as pe
 
-a = alg.get_element("a")
-b = alg.get_element("b")
+alg = FreeAlgebra("a,b", {'q':[7,2], 'r': [3,2]}, np.matrix([["q","r"],["r","q"]]), True)
+
+a =  alg.generators["a"]
+print(a, " ", str(type(a)))
+a = U.type_conversion(a,w.Word)
+print(a, " ", str(type(a)))
+b = U.type_conversion(a, e.Element)
+print(b, " ", str(type(b)))
+print(U.ElementONE)
+b = U.type_conversion(13, e.Element)
+print(b, " ", str(type(b)))
+#b = alg.get_element("b")
 
 #u = alg.create_pbw_letter("u" , alg.bracket( alg.generators["a"], alg.generators["b"]) )
 
@@ -75,3 +86,4 @@ a = get_generator("a")
 b= A.get_generator("b")
 u_1 = Element.bracket(a,b)
 c = a+b
+"""

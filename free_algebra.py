@@ -1,13 +1,12 @@
-
-import re
-import letters
 from typing import Dict, Iterable
-import element
-import word
-from universe import Universe
+import re
+import letters as l
+import element as e
+import universe as u
+import word as w
 import numpy as np
-from letters import Letter
 from collections import namedtuple
+
 
 class FreeAlgebra:
     """Where the free algebra itself lives. It serves a structure superclass for PBW_algebra."""
@@ -42,12 +41,10 @@ class FreeAlgebra:
         except ModuleNotFoundError:  # IGNORE
             msg = "Couldn't setup the cyclotomic number field. Please make sure that Sage can be used."
             raise AssertionError(msg)
-                       
-        if print_stats:
-            print("A free algebra with %s generators over the algebraic closure of Q is being generated." 
-                  % len(generators_list))    
             
-        object.__setattr__(self,"generators",{ gen: letters.Letter(gen, print_stats) for gen in generators_list})
+        u.Universe.set_constants()
+             
+        object.__setattr__(self,"generators",{ gen: l.Letter(gen, print_stats) for gen in generators_list})
         object.__setattr__(self, "base_field", P)
         object.__setattr__(self, "field_variables_dict",
                            {name: self.base_field.gen(roots_of_unity[name][0], roots_of_unity[name][1]) 
@@ -60,41 +57,44 @@ class FreeAlgebra:
                             for row in range(len(generators_list)) 
                             for col in range(len(generators_list))})
         #TODO: STRING PARSER FOR MORE COMPLICATED INPUTS NECESSARY
+        u.Universe.set_universe(self)
         
-        Universe.set_universe(self)       
+        if print_stats:
+            print("A free algebra with %s generators over the algebraic closure of Q is being generated." 
+                  % len(generators_list))
         
-    def create_pbw_letter(self, handle: str, presentation: element.Element):
-        return letters.PBWLetter(handle, presentation, True)
+    def create_pbw_letter(self, handle: str, presentation: e.Element):
+        return l.PBWLetter(handle, presentation, True)
     
-    def bracket(self, first, second) -> element.Element:
+    def bracket(self, first, second) -> e.Element:
         """ Computes the q-commutator bracket [first, second]_q of elements. This function splits the commutator
         linearly in the factors and calls word_bracket on pairs of Words (i.e., homogenous components)."""
         # TODO verify
-        if type(first) == letters.Letter:
-            internal_first = element.Element({word.Word([first]) :1 })
-        elif type(first) == letters.PBWLetter:
+        if type(first) == l.Letter:
+            internal_first = e.Element({w.Word([first]) :1 })
+        elif type(first) == l.PBWLetter:
             internal_first = first.presentation
-        elif type(first) == word.Word:
-            internal_first = element.Element({first :1 })
-        elif type(first) == element.Element:
+        elif type(first) == w.Word:
+            internal_first = e.Element({first :1 })
+        elif type(first) == e.Element:
             internal_first = first
         else:
             msg = "Unallowed input type for to commpute the skew-bracket."
             raise AssertionError(msg)
             
-        if type(second) == letters.Letter:
-            internal_second = element.Element({word.Word([second]) :1 })
-        elif type(second) == letters.PBWLetter:
+        if type(second) == l.Letter:
+            internal_second = e.Element({w.Word([second]) :1 })
+        elif type(second) == l.PBWLetter:
             internal_second = second.presentation
-        elif type(second) == word.Word:
-            internal_second = element.Element({second :1 })
-        elif type(second) == element.Element:
+        elif type(second) == w.Word:
+            internal_second = e.Element({second :1 })
+        elif type(second) == e.Element:
             internal_second = second
         else:
             msg = "Unallowed input type for to commpute the skew-bracket."
             raise AssertionError(msg)
             
-        result = element.ElementZERO
+        result = u.Universe.ElementZERO
         for term_1, sca_1 in internal_first.pairs:
             for term_2, sca_2 in internal_second.pairs:
                 result += self.word_bracket(term_1,term_2).scalar_multiply(sca_1*sca_2)
@@ -102,30 +102,33 @@ class FreeAlgebra:
         return result
 
 
-    def word_bracket(self, word1: word.Word, word2: word.Word) -> element.Element:
+    def word_bracket(self, word1: w.Word, word2: w.Word) -> e.Element:
 
         """Computes the bracket [word1,word2]_q between homogeneous components."""
-        first = element.Element({word1: 1})
-        second = element.Element({word2: 1})
+        first = e.Element({word1: 1})
+        second = e.Element({word2: 1})
         return first*second - (second*first).scalar_multiply(word1.q_bilinear(word2))
 
    
     def get_element(self, input_string, scalar=1):
+        x = u.Universe.type_conversion(self.generators[input_string], e.Element)
+        print(x)
+
         try:
-            return self.generators[input_string].to_element().scalar_multiply(scalar)
+            return u.Universe.type_conversion(self.generators[input_string], e.Element).scalar_multiply(scalar)
         except:
             print("No such letter exists.")
             return None
     
-    def set_element(self, string, scalar) -> element.Element:
+    def set_element(self, string, scalar) -> e.Element:
         """The most pratical way to construct a new element. Constructs individual monomials (with an optional scalar).
         Inputs: string, scalar (one by default).
         Output: element of the form 'scalar times string' written in the PBW basis.
         """
         if string == 0:
-            newelement = element.Element({'': 0})
+            newelement = u.Universe.ElementZERO
         else:
-            newelement = element.Element({string: scalar})
+            newelement = e.Element({string: scalar})
         return newelement.rewrite()
     
     #def set_pbw_generator(self, handle: str, representation) -> letters.PBWLetter:
@@ -136,8 +139,48 @@ class FreeAlgebra:
         
 
 
+# STATIC OBJECTS OF ELEMENT
+# TODO create a subclass to make them immutable by overriding __setattr__ and #  __delattr__ ?
+# see https://stackoverflow.com/questions/2682745/how-do-i-create-a-constant-in-python/59935007#59935007
+# or maybe https://stackoverflow.com/questions/24876364/define-a-constant-object-in-python
 
+"""
+def create_element(string, scalar=1):
+"""
+"""The most pratical way to construct a new element. Constructs individual monomials (with an optional scalar).
+Inputs: string, scalar (one by default).
+Output: element of the form 'scalar times string' written in the PBW basis.
+"""
+""" 
+if string == 0:
+    newelement = Element({'': 0})
+else:
+    newelement = Element({string: scalar})
+return newelement.rewrite()
+"""
+"""
+def bracket(first: Element, second: Element) -> Element:
+"""  
+""" Computes the q-commutator bracket [first, second]_q of elements. This function splits the commutator
+linearly in the factors and calls word_bracket on pairs of Words (i.e., homogenous components)."""
+# TODO verify
+"""  
+result = u.Universe.ElementZERO
+for term_1, sca_1 in first.pairs:
+    for term_2, sca_2 in second.pairs:
+        result += word_bracket(term_1,term_2).scalar_multiply(sca_1*sca_2)
 
+return result
+"""
+"""
+def word_bracket(word1: w.Word, word2: w.Word) -> Element:
+"""  
+"""Computes the bracket [word1,word2]_q between homogeneous components."""
+"""  
+first = Element({word1: 1})
+second = Element({word2: 1})
+return first*second - (second*first).scalar_multiply(word1.q_bilinear(word2))
+"""
 
 
 

@@ -7,8 +7,8 @@ Created on Fri Apr  3 08:36:29 2020
 
 import letters as l
 import tensor_element as te
+import universe as u
 from string_helper import string_compressor
-from universe import Universe
 from collections import UserList
 
 
@@ -73,6 +73,7 @@ class Word(UserList):
             raise AssertionError("The given letters were not presented in the expected format.")
 
     def __setattr__(self, name: str, value):
+        
         msg = "It is not allowed to change the value of the attribute '" + name + "'."
         raise AttributeError(msg)
 
@@ -169,9 +170,9 @@ class Word(UserList):
             return 1
 
         result = 1
-        for (row, col) in Universe.q_matrix.keys():
+        for (row, col) in u.Universe.q_matrix.keys():
             power = self.degree.get(row, 0)*other.degree.get(col, 0)
-            result *= Universe.q_matrix[(row, col)]**power
+            result *= u.Universe.q_matrix[(row, col)]**power
         return result
 
     def stats_string(self):
@@ -206,7 +207,7 @@ class TensorWord:
 
                 object.__setattr__(self, "tensor_degree", len(word_list))
 
-            else:
+            else:                
                 msg = ("Please make sure to initialize this class " + "with a list of words as parameter .")
                 raise AssertionError(msg)
 

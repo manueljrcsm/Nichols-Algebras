@@ -1,23 +1,29 @@
 # -*- coding: utf-8 -*-
 
 import tensor_element as te
-from universe import Universe
+import universe as u
 import word as w
 
 
 class Element:
     """Elements in the free algebra live here.
     """
+    
+    __slots__ = ("poly", "scalars", "terms", "pairs")
 
     def __init__(self, dic):
         """An object's structure is stored in a dictionary. Defines some attributes of the element which can
             then be manipulated.
         """
-        newdic = dic.copy()
-        self.poly = newdic
-        self.scalars = newdic.values()
-        self.terms = newdic.keys()
-        self.pairs = newdic.items()
+        object.__setattr__(self, "poly", dic.copy())
+        object.__setattr__(self, "scalars", dic.values())
+        object.__setattr__(self, "terms", dic.keys())
+        object.__setattr__(self, "pairs", dic.items())
+        
+    def __setattr__(self, name: str, value):
+        
+        msg = "It is not allowed to change the value of the attribute '" + name + "'."
+        raise AttributeError(msg)
 
     def __str__(self):
         """Creates the string representation of an element, i.e., what you see when you do '
@@ -109,7 +115,7 @@ class Element:
         """Scales an element by the given number."""
 
         if number == 0:
-            return ElementZERO
+            return u.Universe.ElementZERO
         # TODO CHECK THAT NUMBER IS INT FLOAT SAGE_SCALAR
         if number == 1:
             return Element(self.poly.copy())
@@ -177,42 +183,3 @@ class Element:
     #             output_number += sca_1*sca_2*term_1.q_bilinear(term_2)
     #
     #     return output_number
-
-
-# STATIC OBJECTS OF ELEMENT
-# TODO create a subclass to make them immutable by overriding __setattr__ and #  __delattr__ ?
-# see https://stackoverflow.com/questions/2682745/how-do-i-create-a-constant-in-python/59935007#59935007
-# or maybe https://stackoverflow.com/questions/24876364/define-a-constant-object-in-python
-ElementZERO = Element({})
-ElementONE = Element({"": 1})
-
-
-def create_element(string, scalar=1):
-    """The most pratical way to construct a new element. Constructs individual monomials (with an optional scalar).
-    Inputs: string, scalar (one by default).
-    Output: element of the form 'scalar times string' written in the PBW basis.
-    """
-    if string == 0:
-        newelement = Element({'': 0})
-    else:
-        newelement = Element({string: scalar})
-    return newelement.rewrite()
-
-
-def bracket(first: Element, second: Element) -> Element:
-    """ Computes the q-commutator bracket [first, second]_q of elements. This function splits the commutator
-    linearly in the factors and calls word_bracket on pairs of Words (i.e., homogenous components)."""
-    # TODO verify
-    result = ElementZERO
-    for term_1, sca_1 in first.pairs:
-        for term_2, sca_2 in second.pairs:
-            result += word_bracket(term_1,term_2).scalar_multiply(sca_1*sca_2)
-
-    return result
-
-
-def word_bracket(word1: w.Word, word2: w.Word) -> Element:
-    """Computes the bracket [word1,word2]_q between homogeneous components."""
-    first = Element({word1: 1})
-    second = Element({word2: 1})
-    return first*second - (second*first).scalar_multiply(word1.q_bilinear(word2))

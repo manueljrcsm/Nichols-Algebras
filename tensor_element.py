@@ -81,14 +81,15 @@ class TensorElement:
             output_dict = {}
             for tensor_term_1, sca_1 in self.pairs:
                 for tensor_term_2, sca_2 in other.pairs:
-                    new_term = tensor_term_1 + tensor_term_2
+                                       
                     braiding_sca= 1
                     for i in range(tensor_term_2.tensor_degree):
-                        for j in range(tensor_term_1.tensor_degree, i, -1):
-                            braiding_sca*= tensor_term_1.words[j-1].q_bilinear(tensor_term_2.words[i])
+                        for j in range(i+1,tensor_term_1.tensor_degree):
+                            braiding_sca*= tensor_term_1.words[j].q_bilinear(tensor_term_2.words[i])
+                    
+                    new_term = tensor_term_1 + tensor_term_2
                     new_sca = braiding_sca*sca_1*sca_2
                     
-                    #TODO DEPLOY BRAIDING
 
                     output_dict[new_term] = (output_dict[new_term] + new_sca if (new_term in output_dict) else new_sca)
             return TensorElement(output_dict)
