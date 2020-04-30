@@ -30,7 +30,7 @@ class FreeAlgebra:
                   
         if not q_matrix.shape == (len(generators_list), len(generators_list)):
 
-            msg = "The matrix has the wrong dimensions. Expected ({2},{2}), but got ({2},{2}).".format(
+            msg = "The matrix has the wrong dimensions. Expected ({2},{2}), but got ({0},{1}).".format(
                 q_matrix.shape[0], q_matrix.shape[1], len(self.generators))
             raise AssertionError(msg)
                              
@@ -43,25 +43,36 @@ class FreeAlgebra:
             raise AssertionError(msg)
             
         u.Universe.set_constants()
-             
-        object.__setattr__(self,"generators",{ gen: l.Letter(gen, print_stats) for gen in generators_list})
+        
+        GeneratorsTuple = namedtuple('GeneratorsTuple', " ".join([gen for gen in generators_list]) )             
+        #object.__setattr__(self,"generators",{ gen: l.Letter(gen, print_stats) for gen in generators_list})
+        object.__setattr__(self,"generators", GeneratorsTuple._make([l.Letter(gen, print_stats) for gen in generators_list]))
         object.__setattr__(self, "base_field", P)
         object.__setattr__(self, "field_variables_dict",
                            {name: self.base_field.gen(roots_of_unity[name][0], roots_of_unity[name][1]) 
                             for name, val in roots_of_unity.items()}
                            )
         object.__setattr__(self, "q_matrix",
+                           {(self.generators[row],
+                             self.generators[col]):
+                            self.field_variables_dict[q_matrix[row, col]] 
+                            for row in range(len(generators_list)) 
+                            for col in range(len(generators_list))})
+        """    
+        object.__setattr__(self, "q_matrix",
                            {(list(self.generators.values())[row],
                              list(self.generators.values())[col]):
                             self.field_variables_dict[q_matrix[row, col]] 
                             for row in range(len(generators_list)) 
                             for col in range(len(generators_list))})
+        """
         #TODO: STRING PARSER FOR MORE COMPLICATED INPUTS NECESSARY
         u.Universe.set_universe(self)
         
         if print_stats:
             print("A free algebra with %s generators over the algebraic closure of Q is being generated." 
                   % len(generators_list))
+
         
     def create_pbw_letter(self, handle: str, presentation: e.Element):
         return l.PBWLetter(handle, presentation, True)

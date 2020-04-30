@@ -78,6 +78,9 @@ class Letter:
     def is_unit(self):
         return self.handle in ("", "1")
     
+    def as_Word(self):
+        return w.Word([self])
+    
 
 class PBWLetter(Letter, object):
     """Class where the PBW generators live.

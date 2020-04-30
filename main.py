@@ -1,6 +1,11 @@
 from free_algebra import FreeAlgebra
+from pbw_algebra import PBWAlgebra
 from universe import Universe as U
 import numpy as np
+import letters as l
+import word as w
+import element as e
+import pbw_element as pe
 """
 #from pbw_algebra import PBWAlgebra
 #import numpy as np
@@ -12,22 +17,20 @@ import numpy as np
 
 
 """
-import letters as l
-import word as w
-import element as e
-import pbw_element as pe
 
-alg = FreeAlgebra("a,b", {'q':[7,2], 'r': [3,2]}, np.matrix([["q","r"],["r","q"]]), True)
 
-a =  alg.generators["a"]
-print(a, " ", str(type(a)))
-a = U.type_conversion(a,w.Word)
-print(a, " ", str(type(a)))
-b = U.type_conversion(a, e.Element)
-print(b, " ", str(type(b)))
-print(U.ElementONE)
-b = U.type_conversion(13, e.Element)
-print(b, " ", str(type(b)))
+alg = FreeAlgebra("a,b", {'q':[12,2], 'r': [12,3]}, np.matrix([["q","r"],["r","q"]]), True)
+
+
+a = U.type_conversion(alg.generators.a, e.Element)
+b = U.type_conversion(alg.generators.b, e.Element)
+ab = alg.bracket(alg.generators.a, alg.generators.b)
+aab = alg.bracket(alg.generators.a, ab)
+abaab = alg.bracket(ab, aab)  
+aaab = alg.bracket(alg.generators.a, aab)  
+
+nichols_alg = PBWAlgebra("u v w x y z",[b, ab, aab, abaab, aaab, a], alg)
+
 #b = alg.get_element("b")
 
 #u = alg.create_pbw_letter("u" , alg.bracket( alg.generators["a"], alg.generators["b"]) )

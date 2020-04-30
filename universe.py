@@ -11,6 +11,7 @@ class Universe:
     generators = None
     base_field = None
     q_matrix = None
+    pbw_generators = None
     relations = None
     LetterEMPTY = None
     PBWLetterEMPTY = None
@@ -19,8 +20,7 @@ class Universe:
     ElementONE = None
     PBWElementZERO = None
     PBWElementONE = None
-    
-    
+
 
     @classmethod
     def set_universe(self, algebra) -> None:
