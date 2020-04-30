@@ -53,6 +53,8 @@ print(x.presentation)
 print(algebra.generators)
 print(pbw_alg.pbw_generators)
 
+print(type(list(pe.PBWElement({test_word:1}).as_Element().scalars)[1]))
+
 # Example of potential future uses taken from the Zoom chat
 """
 A = FreeAlgebra("a b")
