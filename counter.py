@@ -21,8 +21,6 @@ class Counter:
 
     def increment(self):
         
-        print("Input: ", self.counter, "heights: ", self.heights)
-        
         i = self.end- self.start
         self.counter[i]  +=1
         
@@ -39,10 +37,7 @@ class Counter:
                 overflow = False
                 self.out_of_bounds = True
                 
-        print("Output: ",self.counter)
-                
     def round_up(self):
-        print("Input: ", self.counter, "heights: ", self.heights)
         
         i= self.end - self.start
         
@@ -69,8 +64,6 @@ class Counter:
                 overflow = False
                 self.out_of_bounds = True
 
-        print("Output: ",self.counter)            
-
 def determine_height(pbw_letter, target_degree):    
     pw_deg =  w.Word([pbw_letter]).degree  
     output = -1
@@ -86,5 +79,4 @@ def determine_height(pbw_letter, target_degree):
         msg ="The height of the letter ", pbw_letter, " couldn't be determined correctly."
         raise AssertionError(msg)
         
-    print("PBW Letter: ", pbw_letter, "height: ", output)
     return output

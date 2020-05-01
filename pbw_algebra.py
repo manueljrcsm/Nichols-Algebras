@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import re
 import pbw_element as pe
 import letters as l
 import universe as u
@@ -48,6 +48,10 @@ class PBWAlgebra(FreeAlgebra):
             for j in range(i+1,len(self.pbw_generators)):
                 x_i: l.PBWLetter  = self.pbw_generators[i]
                 x_j: l.PBWLetter = self.pbw_generators[j]
+                
+                #DEBUG
+                print("Computing relations between ", x_i, " and ", x_j)
+                
                 trigger = (x_i,x_j) # The non-PBW term.
                 q_ij = x_i.as_Word().q_bilinear(x_j.as_Word())
 
@@ -65,8 +69,9 @@ class PBWAlgebra(FreeAlgebra):
                                    target_degree.keys()): # Case smaller degree.
                                 c.increment()
                             else: # Case equal degree.
-                                v = pe.PBWElement({candidate:1}).as_Element()
-                                coeff = pe.PBWElement({target:1}).as_Element().c_bilinear(v) / v.c_bilinear(v) # Compute c_ij^candidate
+                                #DEBUGING
+                                v = pe.PBWElement({candidate:1})
+                                coeff = pe.PBWElement({target:1}).c_bilinear(v) / v.c_bilinear(v) # Compute c_ij^candidate
                                 writing_rule += pe.PBWElement({candidate: coeff})
                                 c.round_up()
                         else: # Case greater degree.
@@ -74,6 +79,7 @@ class PBWAlgebra(FreeAlgebra):
                     except KeyError:
                         c.increment()
                 self.relations[trigger] = writing_rule
+                print("Found the relation ", x_i, x_j," = ", writing_rule)
         """
         p = self.q_matrix[(Universe.generators[0], Universe.generators[0])]
         q = self.q_matrix[(Universe.generators[0], Universe.generators[1])]
@@ -84,3 +90,9 @@ class PBWAlgebra(FreeAlgebra):
         import word as w
         self.relations[(z,t)] = pbw_element.PBWElement({w.Word([t,z]): q, w.Word([u]): 1})"""
 
+    def get_PBWElement(self, input_string):
+        
+        seperator_string="[ , ;]" # characters which can be used to seperate letters
+        input_list = [inp for inp in re.split(seperator_string, input_string) if inp != ""]
+        return pe.PBWElement({w.Word([getattr(self.pbw_generators, inp) for inp in input_list]):1})
+        

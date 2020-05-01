@@ -4,7 +4,7 @@ Created on Fri Apr  3 08:36:29 2020
 
 @author: Sebas
 """
-
+import functools
 import letters as l
 import tensor_element as te
 import universe as u
@@ -115,6 +115,7 @@ class Word(UserList):
         res = self.data[i]
         return type(self)(res) if isinstance(i, slice) else res
 
+    @functools.lru_cache(maxsize=256)
     def coproduct(self):
         """Computes the coproduct of a word.
 
@@ -126,7 +127,9 @@ class Word(UserList):
 
         return output
 
-    def c_bilinear(self, other):
+    @functools.lru_cache(maxsize=256)
+    def c_bilinear(self, other):  
+        
         """Computes the c_bilinear form of a word and another word.
 
             Basic idea is to use the compatibility of co-products with the c bilinear to reduce the word length.
@@ -141,12 +144,19 @@ class Word(UserList):
             msg = ("The c_bilinear form of incompatible types was called." + " Execution is aborted.")
             raise AssertionError(msg)
 
-        if not all(type(letter) is l.Letter for letter in self.letters):
-            raise AssertionError("C_bilinear form is only defined for Words of Letters.")
+        #if not all(type(letter) is l.Letter for letter in self.letters):
+        #    raise AssertionError("C_bilinear form is only defined for Words of Letters.")
 
         output_number = 0
-        # Step 1: Reduce the length of self
-        if self.length > 1:
+        #Using the fact that the c-bilnear is graded.
+        if self.degree != other.degree:
+            return 0
+        
+        #Treating the cases of units sepratly for efficeny reasons.
+        elif self.length == 0 or other.length == 0:
+            output_number = 1 if self.length== other.length else 0
+        # Step 1: Reduce the length of self    
+        elif self.length > 1:
             for term, sca in other.coproduct().pairs:
                 output_number += (
                         sca*Word([self.letters[0]]).c_bilinear(term.words[0])*Word(self.letters[1:]).c_bilinear(
@@ -160,11 +170,11 @@ class Word(UserList):
         # TODO QUESTIONS is the word 1 given as Word(()) or as Word((Letter("")))?
         elif self.length == 1 and other.length == 1:
             output_number += (self.letters[0]).c_bilinear(other.letters[0])
-        elif self.length == 0 and other.length == 0:
-            output_number = 1
+        #elif self.length == 0 and other.length == 0:
+        #    output_number = 1
 
         # The left cases, i.e. self/other has length 1 and other/self has lengt 0 always yield zero. 
-        # Thus they need not be treated specifically
+        # Thus they need not be treated specifically       
         return output_number
 
     def q_bilinear(self, other):
@@ -245,6 +255,7 @@ class TensorWord:
     def __hash__(self):
         return hash(str(self))
 
+    @functools.lru_cache(maxsize=256)
     def coproduct(self):
         """Computes the coproduct of a given TensorWord by applying the coproduct to its first term
         """

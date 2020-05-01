@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import functools
 import word as w
 import element as e
 import tensor_element as te
@@ -52,14 +53,16 @@ class Letter:
 
         return isinstance(other, Letter) and self.handle == other.handle
 
-    def c_bilinear(self, other):
+    def c_bilinear(self, other):          
         """Returns the c of algebra generators, i.e., (self|self) = 1 and else returns 0."""
 
-        if type(other) != Letter:
+        if not isinstance(other, Letter):
             msg = ("The c_bilinear form of incompatible types was called." + " Execution is aborted.")
             raise AssertionError(msg)
-
-        return 1 if (self == other) else 0
+        elif type(other) == PBWLetter:
+            return e.Element({w.Word([self]):1}).c_bilinear(other.presentation)
+        else:
+            return 1 if (self == other) else 0
 
     def to_Word(self):
         
@@ -119,13 +122,18 @@ class PBWLetter(Letter, object):
             self.presentation)
         return "PBWLetter(\'{}\',{!r})".format(self.handle,str_presentation)
 
+    @functools.lru_cache(maxsize=256)
     def c_bilinear(self, other):
+        print("The c bilinear of PBW letters was called.")
         """ This function returns the c bilinear form (u,v) of two PBW generators u,v
         It relies on the implementation of the c bilinear of its underlying  elements. """
 
-        if type(other) != PBWLetter:
-            msg = ("The c_bilinear form of incompatible types was called." + " Execution is aborted.")
+        if not isinstance(other, Letter):
+            msg = ("The c_bilinear form of incompatible types was called(" + str(type(other)) + ")."+
+                   "Execution is aborted.")
             raise AssertionError(msg)
+        elif type(other) == Letter:
+            return self.presentation.c_bilinear(e.Element({w.Word([other]):1}))
         else:
             return self.presentation.c_bilinear(other.presentation)
 

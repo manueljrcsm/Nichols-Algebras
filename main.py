@@ -29,7 +29,10 @@ aab = alg.bracket(alg.generators.a, ab)
 abaab = alg.bracket(ab, aab)  
 aaab = alg.bracket(alg.generators.a, aab)  
 
-nichols_alg = PBWAlgebra("u v w x y z",[b, ab, aab, abaab, aaab, a], alg)
+nichols_alg = PBWAlgebra("u v w x y z",[a, aaab, abaab, aab, ab, b], alg)
+r = nichols_alg.get_PBWElement("u u u u u")
+s = nichols_alg.get_PBWElement("x x")
+print(r, "* ", s, " = ", r*s)
 
 #b = alg.get_element("b")
 

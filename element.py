@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import functools
 import tensor_element as te
 import universe as u
 import word as w
@@ -137,6 +137,7 @@ class Element:
                 return newpoly.rewrite()
         return newpoly
 
+    @functools.lru_cache(maxsize=256)
     def coproduct(self):
         """ 
             Returns the coproduct of an element by using the linearity of the coproduct
@@ -151,7 +152,9 @@ class Element:
                    te.TensorElement({w.TensorWord(
                        [w.Word([]), w.Word([])]):0}))
 
-    def c_bilinear(self, other):
+    @functools.lru_cache(maxsize=256)
+    def c_bilinear(self, other): 
+        #print("elements: ", self, other)
         """
             Computes the value of the c bilinear form of an element wrt to another element.
             It uses the bilineary to  compute say (ab+4xy, cd+ 2z) as
