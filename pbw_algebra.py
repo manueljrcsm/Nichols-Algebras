@@ -3,12 +3,14 @@
 import pbw_element as pe
 import letters as l
 import universe as u
+import word as w
+from counter import Counter
 from collections import namedtuple
 
 try:
     from sage.combinat.q_analogues import q_factorial, q_int
 except:
-    print('Sage module not found')
+    print('Sage modules q_factorial and/or q_int not found')
 from free_algebra import FreeAlgebra
 
 class PBWAlgebra(FreeAlgebra):
@@ -25,13 +27,17 @@ class PBWAlgebra(FreeAlgebra):
                                                             range(len(pbw_definitions))])
         else:
             raise ValueError("The number of handles does not match the number of definitions provided.")
+        u.Universe.pbw_generators = self.pbw_generators
         self.mother_algebra = mother_algebra
-        self.string_generators = mother_algebra.string_generators
+        #self.string_generators = mother_algebra.string_generators
         self.generators = mother_algebra.generators
         self.base_field = mother_algebra.base_field
         self.q_matrix = mother_algebra.q_matrix
         self.relations = {}  # No relations to begin with, updated with compute_relations below.
         self.compute_relations()
+        
+        for handle, val in self.relations.items():
+            print("handle: ", handle, "val: ", val)
         u.Universe.set_pbw_universe(self)
 
 
@@ -44,26 +50,30 @@ class PBWAlgebra(FreeAlgebra):
                 x_j: l.PBWLetter = self.pbw_generators[j]
                 trigger = (x_i,x_j) # The non-PBW term.
                 q_ij = x_i.as_Word().q_bilinear(x_j.as_Word())
-                import word as w
+
                 target = w.Word([x_j,x_i])
                 writing_rule = pe.PBWElement({target: q_ij}) # The right hand side
                 # of the relation is initialized with the PBW-term of the bracket commutator
                 """ SEARCH PATTERN GOES HERE, ADDING SUMMANDS TO writing_rule """
-                target_degree = target.degree_dict
-                counter: Counter = Counter(j - i + 1)
-                while True:
-                    candidate = Word([self.pbw_generators[j - n] for n in range(j - i + 1) for m in range(counter[n])])
-                    if all(candidate.degree_dict[letter] <= target_degree[letter] for letter in target_degree.keys()):
-                        if any(candidate.degree_dict[letter] < target_degree[letter] for letter in
-                               target_degree.keys()): # Case smaller degree.
-                            counter.increment()
-                        else: # Case equal degree.
-                            v = pe.PBWElement({candidate:1}).as_Element()
-                            coeff = pe.PBWElement({target:1}).as_Element().c_bilinear(v) / v.c_bilinear(v) # Compute c_ij^candidate
-                            writing_rule += pe.PBWElement({candidate: coeff})
-                    else: # Case greater degree.
-                        counter.overflown()
-                relations[trigger] = writing_rule
+                target_degree = target.degree
+                c = Counter(i, j, target_degree)
+                while not c.out_of_bounds:
+                    try:
+                        candidate = w.Word([self.pbw_generators[j - n] for n in range(j - i + 1) for m in range(c.counter[n])])
+                        if all(candidate.degree[letter] <= target_degree[letter] for letter in target_degree.keys()):
+                            if any(candidate.degree[letter] < target_degree[letter] for letter in
+                                   target_degree.keys()): # Case smaller degree.
+                                c.increment()
+                            else: # Case equal degree.
+                                v = pe.PBWElement({candidate:1}).as_Element()
+                                coeff = pe.PBWElement({target:1}).as_Element().c_bilinear(v) / v.c_bilinear(v) # Compute c_ij^candidate
+                                writing_rule += pe.PBWElement({candidate: coeff})
+                                c.round_up()
+                        else: # Case greater degree.
+                            c.round_up()
+                    except KeyError:
+                        c.increment()
+                self.relations[trigger] = writing_rule
         """
         p = self.q_matrix[(Universe.generators[0], Universe.generators[0])]
         q = self.q_matrix[(Universe.generators[0], Universe.generators[1])]

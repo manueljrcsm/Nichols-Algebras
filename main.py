@@ -1,27 +1,47 @@
-# -*- coding: utf-8 -*-
-
-
 from free_algebra import FreeAlgebra
 from pbw_algebra import PBWAlgebra
+from universe import Universe as U
 import numpy as np
 import letters as l
 import word as w
 import element as e
 import pbw_element as pe
+"""
+#from pbw_algebra import PBWAlgebra
+#import numpy as np
+#import word
+#import element
+#import letters
 
-try:
-    from sage.all_cmdline import FractionField,PolynomialRing,QQ  # imports sage library
 
-    names = ('q_11', 'q_12', 'q_21','q_22')  # tuple of strings with the q matrix
-    P = FractionField(PolynomialRing(QQ, 4, names))
-    (q_11,q_12,q_21,q_22) = P._first_ngens(4)
-    print(P)
 
-except ModuleNotFoundError:  # IGNORE
-     (q_11,q_12,q_21,q_22) = (2,3,5,7)
-     P = None
-     print("Sage Module not found at main,  (q_11,q_12,q_21,q_22)=(%s,%s,%s,%s)"% (q_11,q_12,q_21,q_22))
 
+"""
+
+
+alg = FreeAlgebra("a,b", {'q':[12,2], 'r': [12,3]}, np.matrix([["q","r"],["r","q"]]), True)
+
+
+a = U.type_conversion(alg.generators.a, e.Element)
+b = U.type_conversion(alg.generators.b, e.Element)
+ab = alg.bracket(alg.generators.a, alg.generators.b)
+aab = alg.bracket(alg.generators.a, ab)
+abaab = alg.bracket(ab, aab)  
+aaab = alg.bracket(alg.generators.a, aab)  
+
+nichols_alg = PBWAlgebra("u v w x y z",[b, ab, aab, abaab, aaab, a], alg)
+
+#b = alg.get_element("b")
+
+#u = alg.create_pbw_letter("u" , alg.bracket( alg.generators["a"], alg.generators["b"]) )
+
+#v = alg.create_pbw_letter("v" , alg.bracket( alg.generators["a"], u) )
+
+
+
+
+
+"""
 algebra = FreeAlgebra("a b", P, np.array([[q_11,q_12],[q_21,q_22]]))
 a,b = [e.Element({w.Word([each]):1}) for each in algebra.generators]
 
@@ -32,6 +52,7 @@ pbw_definitions[1] = e.bracket(a,b) # x_a+b = [x_a,x_b]
 pbw_definitions[3] = e.bracket(a,pbw_definitions[1]) # x_2a+b = [x_a,x_a+b]
 pbw_definitions[4] = e.bracket(a,pbw_definitions[3]) # x_3a+b = [x_a,x_2a+b]
 pbw_definitions[2] = e.bracket(pbw_definitions[3],pbw_definitions[1]) # x_3a+2b = [x_2a+b,x_a+b]
+
 
 pbw_alg = PBWAlgebra("t u v x y z",pbw_definitions, algebra)
 t,u,v,x,y,z = pbw_alg.pbw_generators
@@ -53,7 +74,7 @@ print(x.presentation)
 print(algebra.generators)
 print(pbw_alg.pbw_generators)
 
-print(type(list(pe.PBWElement({test_word:1}).as_Element().scalars)[1]))
+"""
 
 # Example of potential future uses taken from the Zoom chat
 """
