@@ -19,7 +19,7 @@ import pbw_element as pe
 """
 
 
-alg = FreeAlgebra("a,b", {'q':[12,2], 'r': [12,3]}, np.matrix([["q","r"],["r","q"]]), True)
+alg = FreeAlgebra("a,b", {'q':[11,1], 'r': [11,4], 's':[11,3]}, np.matrix([["q","r"],["r","s"]]), True)
 
 
 a = U.type_conversion(alg.generators.a, e.Element)
@@ -29,9 +29,16 @@ aab = alg.bracket(alg.generators.a, ab)
 abaab = alg.bracket(ab, aab)  
 aaab = alg.bracket(alg.generators.a, aab)  
 
-nichols_alg = PBWAlgebra("u v w x y z",[a, aaab, abaab, aab, ab, b], alg)
-r = nichols_alg.get_PBWElement("u u u u u")
-s = nichols_alg.get_PBWElement("x x")
+
+print("pres", ab)
+print("Coproduct", ab.coproduct())
+print("C-norm", ab.c_bilinear(ab))
+print("C-norm", (a*b).c_bilinear(ab))
+nichols_alg = PBWAlgebra("u v w x y z",[a, aaab, aab, abaab, ab, b], alg)
+u = nichols_alg.get_PBWElement("u")
+v = nichols_alg.get_PBWElement("y")
+r = u*u*u*u*u
+s = v
 print(r, "* ", s, " = ", r*s)
 
 #b = alg.get_element("b")

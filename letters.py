@@ -89,13 +89,14 @@ class PBWLetter(Letter, object):
     """Class where the PBW generators live.
     Similarly to letters PBW generators should be fixed once and for all
     """
-    __slots__ = ("handle", "presentation", "coproduct")
+    __slots__ = ("handle", "presentation", "coproduct", "degree")
 
     def __init__(self, handle: str, presentation, print_stats=False):
 
         object.__setattr__(self, "handle", handle)
         object.__setattr__(self, "presentation", presentation)
         object.__setattr__(self, "coproduct", presentation.coproduct())
+        object.__setattr__(self, "degree", list(presentation.terms)[0].degree)
 
         if print_stats:
             print(self.stats_string())
@@ -124,7 +125,6 @@ class PBWLetter(Letter, object):
 
     @functools.lru_cache(maxsize=256)
     def c_bilinear(self, other):
-        print("The c bilinear of PBW letters was called.")
         """ This function returns the c bilinear form (u,v) of two PBW generators u,v
         It relies on the implementation of the c bilinear of its underlying  elements. """
 

@@ -16,8 +16,20 @@ class Counter:
         self.end = end
         self.target_degree = target_degree
         self.counter = [0 for i in range(end-start+1)]
+        self.degree = {handle: 0 for handle,val in target_degree.items()}
+        self.stepsize = {j: u.Universe.pbw_generators[start+j].degree for j in range(end-start+1)}
         self.heights = [determine_height(u.Universe.pbw_generators[j], self. target_degree) for j in range(start, end+1)]
         self.out_of_bounds = False
+                
+        for j in range(end- start+1):
+            try:
+                for letter in list(self.stepsize[j].keys()):                    
+                    self.target_degree[letter]
+            except KeyError:
+                msg =" It seems that the convexity of the ordering is not satisfied. Please check your input."
+                raise AssertionError(msg)
+                
+            
 
     def increment(self):
         
@@ -37,8 +49,10 @@ class Counter:
                 overflow = False
                 self.out_of_bounds = True
                 
+        self.compute_degree()
+                
     def round_up(self):
-        
+               
         i= self.end - self.start
         
         while self.counter[i] == 0 and i>0:
@@ -63,7 +77,27 @@ class Counter:
             else:
                 overflow = False
                 self.out_of_bounds = True
+                
+        self.compute_degree()
 
+    def compute_degree(self):
+        
+        for letter in list(self.degree.keys()):
+
+            self.degree[letter] =sum([ self.stepsize[i].get(letter, 0)*self.counter[i] for i in range(len(self.counter))])
+        
+    
+    def state(self):
+        if all(self.degree[letter] <= self.target_degree[letter] for letter in self.target_degree.keys()):
+            if any(self.degree[letter] < self.target_degree[letter] for letter in
+                   self.target_degree.keys()): # Case smaller degree.
+                return -1
+            else:
+                return 0
+        else:
+            return 1
+            
+    
 def determine_height(pbw_letter, target_degree):    
     pw_deg =  w.Word([pbw_letter]).degree  
     output = -1
@@ -79,4 +113,4 @@ def determine_height(pbw_letter, target_degree):
         msg ="The height of the letter ", pbw_letter, " couldn't be determined correctly."
         raise AssertionError(msg)
         
-    return output
+    return output    

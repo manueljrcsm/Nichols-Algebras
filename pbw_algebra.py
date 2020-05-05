@@ -60,7 +60,37 @@ class PBWAlgebra(FreeAlgebra):
                 # of the relation is initialized with the PBW-term of the bracket commutator
                 """ SEARCH PATTERN GOES HERE, ADDING SUMMANDS TO writing_rule """
                 target_degree = target.degree
+                
                 c = Counter(i, j, target_degree)
+
+                
+                while not c.out_of_bounds:
+                    #print("   ", c.counter)
+                    current_state = c.state()
+                    if current_state < 0:
+                        c.increment()
+                        
+                    elif current_state == 0:
+                        
+                        candidate = w.Word([self.pbw_generators[j - n] for n in range(j - i + 1) for m in range(c.counter[n])])
+                        if not candidate == target: # Excluding the target case. See Lemma 4.5
+                            v = pe.PBWElement({candidate:1})    
+                            norm_v = v.c_bilinear(v)
+                            if norm_v != 0:
+                                coeff = pe.PBWElement({w.Word([x_i,  x_j]):1}).c_bilinear(v) / norm_v # Compute c_ij^candidate
+                            else:
+                                 msg = ("The orthogonality condition of the c-bilinear form was not met."+
+                                 " Please check the given pbw generators and the matrix of the braiding. ")
+                                 raise AssertionError(msg)
+                            print("Found the candidate: ", v, " with coeff: ", coeff)
+                            if coeff != 0:
+                                writing_rule += pe.PBWElement({candidate: coeff})
+                        c.round_up()
+                                    
+                    else:
+                        c.round_up()
+                
+                """
                 while not c.out_of_bounds:
                     try:
                         candidate = w.Word([self.pbw_generators[j - n] for n in range(j - i + 1) for m in range(c.counter[n])])
@@ -69,15 +99,21 @@ class PBWAlgebra(FreeAlgebra):
                                    target_degree.keys()): # Case smaller degree.
                                 c.increment()
                             else: # Case equal degree.
-                                #DEBUGING
                                 v = pe.PBWElement({candidate:1})
-                                coeff = pe.PBWElement({target:1}).c_bilinear(v) / v.c_bilinear(v) # Compute c_ij^candidate
-                                writing_rule += pe.PBWElement({candidate: coeff})
+                                if not candidate == target: # Excluding the target case. See Lemma 4.5
+                                    coeff = pe.PBWElement({target:1}).c_bilinear(v) / v.c_bilinear(v) # Compute c_ij^candidate
+                                    
+                                    print("The candidate, ", v, " was found. Its coeeficient is, ", coeff, ".")
+                                    
+                                    if coeff != 0:
+                                        writing_rule += pe.PBWElement({candidate: coeff})
                                 c.round_up()
                         else: # Case greater degree.
                             c.round_up()
                     except KeyError:
                         c.increment()
+                """
+                
                 self.relations[trigger] = writing_rule
                 print("Found the relation ", x_i, x_j," = ", writing_rule)
         """
