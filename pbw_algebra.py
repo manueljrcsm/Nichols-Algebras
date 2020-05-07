@@ -20,6 +20,7 @@ class PBWAlgebra(FreeAlgebra):
     def __init__(self, string_pbw_generators: str,pbw_definitions: list, mother_algebra) -> None:
         # super().__init__(mother_algebra.string_generators, mother_algebra.base_field,
         # mother_algebra.q_matrix)
+        
         string_to_list = string_pbw_generators.split(' ')
         if len(string_to_list) == len(pbw_definitions):
             PBWGeneratorsTuple = namedtuple('GeneratorsTuple', string_pbw_generators)
@@ -28,6 +29,9 @@ class PBWAlgebra(FreeAlgebra):
         else:
             raise ValueError("The number of handles does not match the number of definitions provided.")
         u.Universe.pbw_generators = self.pbw_generators
+        
+        print(" ".join([str(self.pbw_generators[i].handle)+ str(self.pbw_generators[i].degree) for i in range(len(pbw_definitions)) ]))        
+        
         self.mother_algebra = mother_algebra
         #self.string_generators = mother_algebra.string_generators
         self.generators = mother_algebra.generators
@@ -62,18 +66,17 @@ class PBWAlgebra(FreeAlgebra):
                 target_degree = target.degree
                 
                 c = Counter(i, j, target_degree)
-
                 
                 while not c.out_of_bounds:
-                    #print("   ", c.counter)
                     current_state = c.state()
                     if current_state < 0:
                         c.increment()
                         
                     elif current_state == 0:
                         
-                        candidate = w.Word([self.pbw_generators[j - n] for n in range(j - i + 1) for m in range(c.counter[n])])
+                        candidate = w.Word([self.pbw_generators[j-n] for n in range(j - i + 1) for m in range(c.counter[-(n+1)])])
                         if not candidate == target: # Excluding the target case. See Lemma 4.5
+                            
                             v = pe.PBWElement({candidate:1})    
                             norm_v = v.c_bilinear(v)
                             if norm_v != 0:
@@ -83,36 +86,13 @@ class PBWAlgebra(FreeAlgebra):
                                  " Please check the given pbw generators and the matrix of the braiding. ")
                                  raise AssertionError(msg)
                             print("Found the candidate: ", v, " with coeff: ", coeff)
+                            print("   ", c.counter)
                             if coeff != 0:
                                 writing_rule += pe.PBWElement({candidate: coeff})
                         c.round_up()
                                     
                     else:
-                        c.round_up()
-                
-                """
-                while not c.out_of_bounds:
-                    try:
-                        candidate = w.Word([self.pbw_generators[j - n] for n in range(j - i + 1) for m in range(c.counter[n])])
-                        if all(candidate.degree[letter] <= target_degree[letter] for letter in target_degree.keys()):
-                            if any(candidate.degree[letter] < target_degree[letter] for letter in
-                                   target_degree.keys()): # Case smaller degree.
-                                c.increment()
-                            else: # Case equal degree.
-                                v = pe.PBWElement({candidate:1})
-                                if not candidate == target: # Excluding the target case. See Lemma 4.5
-                                    coeff = pe.PBWElement({target:1}).c_bilinear(v) / v.c_bilinear(v) # Compute c_ij^candidate
-                                    
-                                    print("The candidate, ", v, " was found. Its coeeficient is, ", coeff, ".")
-                                    
-                                    if coeff != 0:
-                                        writing_rule += pe.PBWElement({candidate: coeff})
-                                c.round_up()
-                        else: # Case greater degree.
-                            c.round_up()
-                    except KeyError:
-                        c.increment()
-                """
+                        c.round_up()      
                 
                 self.relations[trigger] = writing_rule
                 print("Found the relation ", x_i, x_j," = ", writing_rule)

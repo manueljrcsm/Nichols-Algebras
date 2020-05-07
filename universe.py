@@ -12,7 +12,7 @@ class Universe:
     base_field = None
     q_matrix = None
     pbw_generators = None
-    relations = None
+    relations = {}
     LetterEMPTY = None
     PBWLetterEMPTY = None
     WordEMPTY = None

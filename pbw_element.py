@@ -25,37 +25,35 @@ class PBWElement(Element):
     pbw_universe = None
 
     def rewrite(self):
-        try:
-            """Reduction of a polynomial to its standard basis form t > u > v > x > y > z. Where it really gets
-            interesting and where the commutation relations are applied.
-            The relations are
-                zt = qtz + u
-                zu = (pq)uz + x
-                zx = (p^2q)xz + y
-                xu = (p^2q^3r)ux + v
-                zy = (p^3q)yz
-                ut = (1+ r - rq^2)/(qr) tu - (1-q^2)(1 - q^2r)/(q^2r) t^2z
-            """
-            # Relations are added here, this can be moved elsewhere or passed as an argument
-            newpoly = PBWElement(self.poly.copy())  # create a copy to begin
-            relations = u.Universe.relations
-            for term, sca in newpoly.pairs:
-                # Run through the monomial terms recursively, applying the relations whenever possible. Bergman's Diamond
-                # lemma guarantees this works.
-                if sca == 0:
-                    # Monomial terms with corresponding coefficient 0 are deleted
+        """Reduction of a polynomial to its standard basis form t > u > v > x > y > z. Where it really gets
+        interesting and where the commutation relations are applied.
+        The relations are
+            zt = qtz + u
+            zu = (pq)uz + x
+            zx = (p^2q)xz + y
+            xu = (p^2q^3r)ux + v
+            zy = (p^3q)yz
+            ut = (1+ r - rq^2)/(qr) tu - (1-q^2)(1 - q^2r)/(q^2r) t^2z
+        """
+        # Relations are added here, this can be moved elsewhere or passed as an argument
+        newpoly = PBWElement(self.poly.copy())  # create a copy to begin
+        relations = u.Universe.relations
+        for term, sca in newpoly.pairs:
+            # Run through the monomial terms recursively, applying the relations whenever possible. Bergman's Diamond
+            # lemma guarantees this works.
+            if sca == 0:
+                # Monomial terms with corresponding coefficient 0 are deleted
+                del newpoly[term]
+                return newpoly.rewrite()
+            for i in range(len(term) - 1):
+                if (term[i],term[i + 1]) in relations.keys():
+                    # TODO: This presupposes that the relations are skew-commutations
                     del newpoly[term]
+                    newpoly += PBWElement({term[:i]: sca})*relations[(term[i],term[i + 1])]*PBWElement(
+                        {term[i + 2:]: 1})
                     return newpoly.rewrite()
-                for i in range(len(term) - 1):
-                    if (term[i],term[i + 1]) in relations.keys():
-                        # TODO: This presupposes that the relations are skew-commutations
-                        del newpoly[term]
-                        newpoly += PBWElement({term[:i]: sca})*relations[(term[i],term[i + 1])]*PBWElement(
-                            {term[i + 2:]: 1})
-                        return newpoly.rewrite()
-            return newpoly
-        except:
-            return self
+        return newpoly
+            
 
     def as_Element(self):
         """ Takes a PBWElement and expands every PBWLetter into its presentation as an Element. Returns the

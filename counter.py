@@ -16,7 +16,7 @@ class Counter:
         self.end = end
         self.target_degree = target_degree
         self.counter = [0 for i in range(end-start+1)]
-        self.degree = {handle: 0 for handle,val in target_degree.items()}
+        self.degree = {handle: 0 for handle in target_degree.keys()}
         self.stepsize = {j: u.Universe.pbw_generators[start+j].degree for j in range(end-start+1)}
         self.heights = [determine_height(u.Universe.pbw_generators[j], self. target_degree) for j in range(start, end+1)]
         self.out_of_bounds = False
