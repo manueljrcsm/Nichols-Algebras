@@ -29,13 +29,17 @@ aab = alg.bracket(alg.generators.a, ab)
 abaab = alg.bracket(ab, aab)  
 aaab = alg.bracket(alg.generators.a, aab)  
 
+
+
+
+
 l = [a, aaab, aab, abaab, ab, b]
 nichols_alg = PBWAlgebra("u v w x y z", l , alg)
-u = nichols_alg.get_PBWElement("u")
+u = nichols_alg.get_PBWElement("z")
 v = nichols_alg.get_PBWElement("y")
-r = u*u*u*u*u
+r = u
 s = v
-print(r, "*", s, " = ", r*s)
+print("[",r, ",", s, "] = ", r*s -s*r.scalar_multiply(list(r.terms)[0].q_bilinear(list(s.terms)[0])) )
 
 #b = alg.get_element("b")
 
