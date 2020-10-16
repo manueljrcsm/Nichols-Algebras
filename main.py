@@ -19,7 +19,7 @@ import pbw_element as pe
 """
 
 
-alg = FreeAlgebra("a,b", {'q':[11,1], 'r': [11,4], 's':[11,3]}, np.matrix([["q","r"],["r","s"]]), True)
+alg = FreeAlgebra("a,b", {'q':[5,1], 'r': [5,1], 's':[5,3]}, np.matrix([["q","r"],["r","s"]]), True)
 
 
 a = U.type_conversion(alg.generators.a, e.Element)
@@ -34,12 +34,49 @@ aaab = alg.bracket(alg.generators.a, aab)
 
 
 l = [a, aaab, aab, abaab, ab, b]
-nichols_alg = PBWAlgebra("u v w x y z", l , alg)
-u = nichols_alg.get_PBWElement("z")
-v = nichols_alg.get_PBWElement("y")
-r = u
-s = v
-print("[",r, ",", s, "] = ", r*s -s*r.scalar_multiply(list(r.terms)[0].q_bilinear(list(s.terms)[0])) )
+nichols_alg = PBWAlgebra("u uuuv uuv uvuuv uv v", l , alg)
+
+u = nichols_alg.get_PBWElement("u")
+uuuv = nichols_alg.get_PBWElement("uuuv")
+uuv = nichols_alg.get_PBWElement("uuv")
+uvuuv = nichols_alg.get_PBWElement("uvuuv")
+uv = nichols_alg.get_PBWElement("uv")
+v = nichols_alg.get_PBWElement("v")
+
+print("We will now compute the BGG resolution")
+
+#print("[u,u,u,v] = ",nichols_alg.element_to_PBWElement(nichols_alg.bracket([u,u,u,u,v])))
+print("[u,v] = ",nichols_alg.bracket([u,v]))
+print("[u,u,v] = ",nichols_alg.bracket([u,u,v]))
+print("[u,u,v] = ",nichols_alg.bracket([u,u,u,u,v]))
+print("[u,u,u,v] = ",nichols_alg.bracket([u,u,u,u,v]))
+print("[u,u,u,v] = ",nichols_alg.element_to_PBWElement(nichols_alg.bracket([u,u,u,u,v])))
+"""
+el_1 = nichols_alg.get_PBWElement("u u u v")
+el_2 = nichols_alg.get_PBWElement("u u v u")
+el_3 = nichols_alg.get_PBWElement("u v u u")
+el_4 = nichols_alg.get_PBWElement("v u u u")
+el= (el_1+el_2+el_3+el_4).rewrite()
+print("uuuv + uuvu + uvuu +vuuu = ",  el)
+el_5 = nichols_alg.get_PBWElement("u u u u u")
+el_6 = nichols_alg.get_PBWElement("v v")
+print("uuuuuvv = ",  ((el_5*el_6).rewrite()).as_Element())
+print("uvu(uuuv + uuvu + uvuu +vuuu) = ", ((u*v*u*el).rewrite()).as_Element())
+print("vuu(uuuv + uuvu + uvuu +vuuu) = ", ((v*u*u*el).rewrite()).as_Element())
+
+print("[v, v, u] = ",nichols_alg.bracket([v,v,u]))
+
+print("Path 1: u^5* uv  = ",(u*u*u*u*u*u*v).rewrite().as_Element())
+print("Path 1: u^5* vu  = ",(u*u*u*u*u*v*u).rewrite().as_Element())
+
+print("Path 1: uvu* u^4 = ",(u*v*u*u*u*u*u).rewrite().as_Element())
+print("Path 1: vuu* u^4 = ",(v*u*u*u*u*u*u).rewrite().as_Element())
+
+"""
+#print("[u,v] = ", nichols_alg.bracket([u, v]))
+#print("[u,[u,[u,[u,v]]]] = ", nichols_alg.bracket([u,u,u,u,v]))
+
+#print("[",r, ",", s, "] = ", r*s -s*r.scalar_multiply(list(r.terms)[0].q_bilinear(list(s.terms)[0])) )
 
 #b = alg.get_element("b")
 

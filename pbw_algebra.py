@@ -33,15 +33,24 @@ class PBWAlgebra(FreeAlgebra):
         print(" ".join([str(self.pbw_generators[i].handle)+ str(self.pbw_generators[i].degree) for i in range(len(pbw_definitions)) ]))        
         
         self.mother_algebra = mother_algebra
-        #self.string_generators = mother_algebra.string_generators
-        self.generators = mother_algebra.generators
+        #self.generators = mother_algebra.generators
+        
+        self.generators = {}
+        for pbw_let in self.pbw_generators:
+            pres_dict = pbw_let.presentation
+            if len(list(pres_dict.scalars)) == 1 and list(pres_dict.scalars)[0] == 1:
+                pres_wrd = list(pres_dict.terms)[0]
+                if pres_wrd.length == 1:
+                    self.generators[pres_wrd.letters[0]] = pbw_let       
+        
         self.base_field = mother_algebra.base_field
         self.q_matrix = mother_algebra.q_matrix
         self.relations = {}  # No relations to begin with, updated with compute_relations below.
         self.compute_relations()
         
-        for handle, val in self.relations.items():
-            print("handle: ", handle, "val: ", val)
+       
+        #for handle, val in self.relations.items():
+            #print("handle: ", handle, "val: ", val)
         u.Universe.set_pbw_universe(self)
 
 
@@ -111,4 +120,25 @@ class PBWAlgebra(FreeAlgebra):
         seperator_string="[ , ;]" # characters which can be used to seperate letters
         input_list = [inp for inp in re.split(seperator_string, input_string) if inp != ""]
         return pe.PBWElement({w.Word([getattr(self.pbw_generators, inp) for inp in input_list]):1})
+       
+    def bracket(self, element_list):
+        #TODO ASSERT THAT element_list is iterable
+        output_element = u.Universe.ElementZERO
+        for pbw_el in reversed(element_list):
+            if output_element == u.Universe.ElementZERO:
+                output_element = pbw_el.as_Element()
+            else:
+                output_element = self.mother_algebra.bracket(pbw_el.as_Element(), output_element)
+        return output_element
         
+    def element_to_PBWElement(self, elmt):
+        pbw_dict = {}
+        for term, scal in elmt.pairs:
+            pbw_let_list = []
+            for letter in term.letters:
+                pbw_let_list.append(self.generators[letter])
+            
+            pbw_dict[w.Word(pbw_let_list)] =scal
+            
+        return pe.PBWElement(pbw_dict).rewrite()
+                
