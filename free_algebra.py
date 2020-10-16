@@ -90,7 +90,7 @@ class FreeAlgebra:
         elif type(first) == e.Element:
             internal_first = first
         else:
-            msg = "Unallowed input type for to commpute the skew-bracket."
+            msg = "Unallowed input type in the first argument for the computation the skew-bracket."
             raise AssertionError(msg)
             
         if type(second) == l.Letter:
@@ -102,7 +102,7 @@ class FreeAlgebra:
         elif type(second) == e.Element:
             internal_second = second
         else:
-            msg = "Unallowed input type for to commpute the skew-bracket."
+            msg = "Unallowed input type in the second argument for to computation the skew-bracket."
             raise AssertionError(msg)
             
         result = u.Universe.ElementZERO
