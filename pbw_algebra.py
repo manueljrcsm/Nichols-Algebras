@@ -4,8 +4,12 @@ import pbw_element as pe
 import letters as l
 import universe as u
 import word as w
+import itertools
 from counter import Counter
 from collections import namedtuple
+import sage.all
+from sage.matrix.all import Matrix 
+from sage.modules.free_module_element import vector
 
 try:
     from sage.combinat.q_analogues import q_factorial, q_int
@@ -141,4 +145,64 @@ class PBWAlgebra(FreeAlgebra):
             pbw_dict[w.Word(pbw_let_list)] =scal
             
         return pe.PBWElement(pbw_dict).rewrite()
+    
+    def solve_Bruhat_square(self, el_1, el_2, el_3):
+        #We search for the(?) element 4 st 2*1 +4*3 = 0
+        let_dict_el_4={}        
+        for let, multipl in (list(el_1.as_Element().terms)[0]).degree.items():
+            let_dict_el_4[let] = multipl 
+            
+        for let, multipl in (list(el_2.as_Element().terms)[0]).degree.items():
+            if let in let_dict_el_4:
+                let_dict_el_4[let] = let_dict_el_4[let] + multipl 
+            else: 
+                let_dict_el_4[let]= multipl
                 
+        for let, multipl in (list(el_3.as_Element().terms)[0]).degree.items():
+            let_dict_el_4[let] = let_dict_el_4[let] - multipl 
+        
+        temp_wrd = [ let for let in list(let_dict_el_4.keys()) for i in range(let_dict_el_4[let]) ]
+        permutation_list = list(itertools.permutations(temp_wrd))       
+        
+        pbw_candidates = []     
+        for permutation in permutation_list:
+            temp_elm = u.Universe.ElementONE
+            for let in list(permutation):
+                temp_elm = temp_elm * (u.Universe.type_conversion(let, type(u.Universe.ElementONE)))
+            
+            temp_pbw_element = self.element_to_PBWElement(temp_elm)
+            pbw_candidates.append(temp_pbw_element)
+        pbw_products = [(pbw_candidate*el_3).rewrite() for pbw_candidate in pbw_candidates]
+                
+        base_elements_list =[]
+        for elmnt in pbw_products:
+            for base_elmt in list(elmnt.terms):
+                if not base_elmt in base_elements_list:
+                    base_elements_list.append(base_elmt)
+                    
+        target_elmt = (el_2*el_1).rewrite()
+        
+        if any([term not in base_elements_list for term in list(target_elmt.terms) ]):
+            print(" Kann nicht gelöst werden.")
+            return u.Universe.PBWElementZERO 
+        
+        target_vector = [ 0 for i in base_elements_list]
+        for elmt, mult in target_elmt.pairs:
+            target_vector[base_elements_list.index(elmt)] = - mult
+        mat = []
+        for pbw_product in pbw_products:
+            temp_list = [ 0 for i in base_elements_list]
+            for elmt, mult in pbw_product.pairs:
+                temp_list[base_elements_list.index(elmt)] = mult
+            mat.append(temp_list)   
+        
+        sage_mat = Matrix(mat).transpose()
+        sage_tv = vector(target_vector)
+        result = sage_mat.solve_right(sage_tv)
+                
+        result_vect = u.Universe.PBWElementZERO
+        
+        for i in range(len(result)):
+            result_vect = result_vect + pbw_candidates[i].scalar_multiply(result[i])
+        
+        return result_vect
